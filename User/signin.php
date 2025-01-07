@@ -20,7 +20,7 @@ session_start(); ?>
                 <p class="landing-info-text">Trang đăng nhập của Phương Đông</p>
                 <ul class="tab-switch">
                     <li class="tab-switch-button"><a href="index.php">Trang Chủ</a></li>
-                    <li class="tab-switch-button"><a href="dangky.html">Đăng Ký</a></li>
+                    <li class="tab-switch-button"><a href="signup.php">Đăng Ký</a></li>
                 </ul>
             </div>
 

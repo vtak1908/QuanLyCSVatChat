@@ -47,7 +47,7 @@
 
     <div class="landing-info">
         <div class="logo">
-            <img src="img/logoql.jpg" alt="Phương Đông" />
+            <img src="img/logoql.png" alt="Phương Đông" />
         </div>
         <h2 class="landing-info-pretitle">Chào mừng bạn đã tới</h2>
         <h1 class="landing-info-title">Phương Đông</h1>

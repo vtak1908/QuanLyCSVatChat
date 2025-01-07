@@ -184,11 +184,10 @@ nav {
 
 /* Logo Section */
 .nav-container .logo img {
-    width: 100px; /* Điều chỉnh kích thước của logo nếu cần */
-    height: 100px; /* Điều chỉnh kích thước của logo nếu cần */
-    object-fit: cover; /* Đảm bảo logo không bị méo */
-    border-radius: 50%; /* Bo tròn logo thành hình tròn */
-    border: 2px solid #fff; /* Thêm viền trắng cho logo (có thể thay đổi theo ý muốn) */
+    width: 120px; /* Điều chỉnh kích thước của logo nếu cần */
+    height: 92px; /* Điều chỉnh kích thước của logo nếu cần */
+   
+    
 }
 
 /* Center Navigation Links */
