@@ -1,5 +1,3 @@
-
-
 /* Responsive Design */
 @media (max-width: 768px) {
     .nav-container {
@@ -16,9 +14,6 @@
         width: 80px;
     }
 }
-
-
-
 section {
     margin-bottom: 50px;
 }
