@@ -33,7 +33,7 @@ session_start(); ?>
                 <li><a href="taisan_User.php">Quản lý tài sản</a></li>
                 <li><a href="baotri.html">Bảo trì</a></li>
                 <li><a href="baocao.html">Báo Cáo</a></li>
-                <li><a href="lienhe.html">Liên Hệ</a></li>
+                <li><a href="lienhe.php">Liên Hệ</a></li>
             </ul>
             <div class="right-section">
                 <div class="search-box">
