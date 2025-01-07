@@ -1,3 +1,5 @@
+<?php
+session_start(); ?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -38,9 +40,18 @@
                     <input type="text" placeholder="Tìm kiếm...">
                     <button type="submit"><i class="fas fa-search"></i></button>
                 </div>
+                <?php if (isset($_SESSION["user"])) {
+              ?>
                 <a href="signin.php" class="login-btn">
                     <i class="fas fa-user"></i> Đăng Nhập
                 </a>
+                <?php } else { ?>
+                    <a href="signin.php" class="login-btn">
+                    <i class="fas fa-user"></i> Đăng Nhập
+                    <a href="signup.php" class="login-btn">
+                    <i class="fas fa-user"></i> Đăng Ký
+                </a>
+                <?php } ?>
             </div>
         </div>
     </nav>
