@@ -28,7 +28,7 @@ $assets = $user->select_Assets();
                     </a>
                 </div>
                 <ul class="nav-links">
-                    <li><a href="trangchu.php">Trang Chủ</a></li>
+                    <li><a href="index.php">Trang Chủ</a></li>
                     <li><a href="baotri.html">Bảo trì</a></li>
                     <li><a href="baocao.html">Báo Cáo</a></li>
                     <li><a href="lienhe.html">Liên Hệ</a></li>

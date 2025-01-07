@@ -24,7 +24,7 @@ session_start(); ?>
     <nav>
         <div class="nav-container">
             <div class="logo">
-                <a href="index.html">
+                <a href="#">
                     <img src="img/logoql.jpg" alt="logo">
                 </a>
             </div>
