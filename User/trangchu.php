@@ -42,8 +42,9 @@ session_start(); ?>
                 </div>
                 <?php if (isset($_SESSION["user"])) {
               ?>
+            <a>Hello <?php echo $_SESSION['user'] ?></a>
                 <a href="signin.php" class="login-btn">
-                    <i class="fas fa-user"></i> Đăng Nhập
+                    <i class="fas fa-user"></i> Đăng Xuất
                 </a>
                 <?php } else { ?>
                     <a href="signin.php" class="login-btn">
