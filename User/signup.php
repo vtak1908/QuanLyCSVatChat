@@ -53,8 +53,8 @@
         <h1 class="landing-info-title">Phương Đông</h1>
         <p class="landing-info-text">Trang đăng ký của Phương Đông</p>
         <ul class="tab-switch">
+            <li class="tab-switch-button login-register-form-trigger"><a href="index.php">Trang Chủ</a></li>
             <li class="tab-switch-button login-register-form-trigger"><a href="signin.php">Đăng Nhập</a></li>
-            <li class="tab-switch-button login-register-form-trigger"><a href="#">Đăng Ký</a></li>
         </ul>
     </div>
 
