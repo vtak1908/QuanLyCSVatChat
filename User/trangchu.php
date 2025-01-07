@@ -28,7 +28,7 @@
             </div>
             <ul class="nav-links">
                 <li><a href="#">Trang Chủ</a></li>
-                <li><a href="taisan.html">Quản lý tài sản</a></li>
+                <li><a href="taisan_User.php">Quản lý tài sản</a></li>
                 <li><a href="baotri.html">Bảo trì</a></li>
                 <li><a href="baocao.html">Báo Cáo</a></li>
                 <li><a href="lienhe.html">Liên Hệ</a></li>
