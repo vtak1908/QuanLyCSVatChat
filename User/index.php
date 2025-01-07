@@ -20,7 +20,6 @@ session_start(); ?>
             </div>
         </div>
     </header>
-    
     <nav>
         <div class="nav-container">
             <div class="logo">
@@ -31,8 +30,8 @@ session_start(); ?>
             <ul class="nav-links">
                 <li><a href="index.php">Trang Chủ</a></li>
                 <li><a href="taisan_User.php">Quản lý tài sản</a></li>
-                <li><a href="baotri.html">Bảo trì</a></li>
-                <li><a href="baocao.html">Báo Cáo</a></li>
+                <li><a href="baotri.php">Bảo trì</a></li>
+                <li><a href="baocao.php">Báo Cáo</a></li>
                 <li><a href="lienhe.php">Liên Hệ</a></li>
             </ul>
             <div class="right-section">

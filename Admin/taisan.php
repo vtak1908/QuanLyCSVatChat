@@ -1,51 +1,6 @@
 <?php
 session_start();
-
-include("connect.php");
-include("control.php");
-
-$user = new data_user();
-
-// Xử lý thêm tài sản
-if (isset($_POST['action']) && $_POST['action'] == 'insert') {
-    $name = $_POST['Name'];
-    $img = $_FILES['Image'];
-    $type = $_POST['Type'];
-    $status = $_POST['Status'];
-    $location = $_POST['Location'];
-    $purchadate = isset($_POST['PurchaDate']) ? $_POST['PurchaDate'] : ''; // Kiểm tra sự tồn tại của trường
-
-    if (isset($img['name']) && $img['error'] === 0) {
-        $uploadDir = 'uploads/';
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
-        }
-
-        $fileName = iconv('UTF-8', 'ASCII//TRANSLIT', $img['name']);
-        $fileName = preg_replace('/[^A-Za-z0-9.\-]/', '_', $fileName);
-        $fileTmpPath = $img['tmp_name'];
-        $fileDest = $uploadDir . $fileName;
-
-        if (move_uploaded_file($fileTmpPath, $fileDest)) {
-            $user->insert_assets($name, $fileName, $type, $status, $location, $purchadate);
-            echo "File uploaded successfully: $fileDest";
-        } else {
-            echo "Failed to upload file.";
-        }
-    } else {
-        echo "No file uploaded or upload error.";
-    }
-}
-
-// Xóa tài sản
-if (isset($_POST['action']) && $_POST['action'] == 'delete') {
-    $id = $_POST['Id_Assets'];
-    $result = $user->delete_assets($id);
-}
-
-$assets = $user->select_Assets();
 ?>
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -102,6 +57,48 @@ $assets = $user->select_Assets();
                     <th>Thao tác</th>
                 </tr>
             </thead>
+            <?php
+include("connect.php");
+include("control.php");
+
+$user = new data_user();
+// Xử lý thêm tài sản
+if (isset($_POST['action']) && $_POST['action'] == 'insert') {
+    $name = $_POST['Name'];
+    $img = $_FILES['Image'];
+    $type = $_POST['Type'];
+    $status = $_POST['Status'];
+    $location = $_POST['Location'];
+    $purchadate = isset($_POST['PurchaDate']) ? $_POST['PurchaDate'] : ''; // Kiểm tra sự tồn tại của trường
+
+    if (isset($img['name']) && $img['error'] === 0) {
+        $uploadDir = 'uploads/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+        $fileName = iconv('UTF-8', 'ASCII//TRANSLIT', $img['name']);
+        $fileName = preg_replace('/[^A-Za-z0-9.\-]/', '_', $fileName);
+        $fileTmpPath = $img['tmp_name'];
+        $fileDest = $uploadDir . $fileName;
+
+        if (move_uploaded_file($fileTmpPath, $fileDest)) {
+            $user->insert_assets($name, $fileName, $type, $status, $location, $purchadate);
+            echo "<script>alert('File uploaded successfully: $fileDest')</script>";
+        } else {
+            echo "<script>alert('Failed to upload file')</script>";
+        }
+    } else {
+        echo "<script>alert('No file uploaded or upload error')</script>";
+    }
+}
+// Xóa tài sản
+if (isset($_POST['action']) && $_POST['action'] == 'delete') {
+    $id = $_POST['Id_Assets'];
+    $result = $user->delete_assets($id);
+}
+$assets = $user->select_Assets();
+?>
+
             <tbody>
                 <?php
                 if ($assets) {
@@ -127,6 +124,7 @@ $assets = $user->select_Assets();
                 ?>
             </tbody>
         </table>
+        
     </section>
     </main>
     <section class="footer">

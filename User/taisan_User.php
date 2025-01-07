@@ -1,41 +1,63 @@
 <?php
 session_start();
-
-include("connect.php");
-include("control.php");
-
-$user = new data_user();
-$assets = $user->select_Assets();
 ?>
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/taisan_User.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <title>Quản Lý Tài Sản</title>
 </head>
 <body>
 <header>
-        <h1>Quản Lý Tài Sản</h1>
-        <nav>
-            <div class="nav-container">
-                <div class="logo">
-                    <a href="index.html">
-                        <img src="img/logoql.jpg" alt="logo">
-                    </a>
-                </div>
-                <ul class="nav-links">
-                    <li><a href="index.php">Trang Chủ</a></li>
-                    <li><a href="baotri.html">Bảo trì</a></li>
-                    <li><a href="baocao.html">Báo Cáo</a></li>
-                    <li><a href="lienhe.html">Liên Hệ</a></li>
-                </ul>
+        <div class="banner">
+            <img src="img/banner.png" alt="Banner Trường Đại Học">
+            <div class="banner-text">
+                <h1>Quản Lý Cơ Sở Vật Chất Đại Học</h1>
+                <p>Hệ thống quản lý cơ sở vật chất hiện đại, tối ưu cho trường đại học</p>
+                <a href="#" class="btn">Tìm Hiểu Thêm</a>
             </div>
-        </nav>
+        </div>
     </header>
+    
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <a href="#">
+                    <img src="img/logoql.jpg" alt="logo">
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.php">Trang Chủ</a></li>
+                <li><a href="taisan_User.php">Quản lý tài sản</a></li>
+                <li><a href="baotri.html">Bảo trì</a></li>
+                <li><a href="baocao.html">Báo Cáo</a></li>
+                <li><a href="lienhe.php">Liên Hệ</a></li>
+            </ul>
+            <div class="right-section">
+                <div class="search-box">
+                    <input type="text" placeholder="Tìm kiếm...">
+                    <button type="submit"><i class="fas fa-search"></i></button>
+                </div>
+                <?php if (isset($_SESSION["user"])) {
+              ?>
+              <i class="login-btn"> Hello <?php echo $_SESSION['user'] ?></i>
+          
+                <a href="logout.php" class="login-btn">
+                    <i class="fas fa-user"></i> Đăng Xuất
+                </a>
+                <?php } else { ?>
+                    <a href="signin.php" class="login-btn">
+                    <i class="fas fa-user"></i> Đăng Nhập
+                    <a href="signup.php" class="login-btn">
+                    <i class="fas fa-user"></i> Đăng Ký
+                </a>
+                <?php } ?>
+            </div>
+        </div>
+    </nav>
     <main>
     <section id="assetList">
         <h2>Danh Sách Tài Sản</h2>
@@ -52,6 +74,10 @@ $assets = $user->select_Assets();
             </thead>
             <tbody>
                 <?php
+                include("connect.php");
+                include("control.php");
+                $user = new data_user();
+                $assets = $user->select_Assets();
                 if ($assets) {
                     while ($row = mysqli_fetch_assoc($assets)) {
                         echo "<tr>";
