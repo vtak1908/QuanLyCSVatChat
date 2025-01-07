@@ -1,4 +1,6 @@
 <?php
+session_start(); ?>
+<?php
                                 include("control.php");
                                 $get_Data = new data_user();
 
