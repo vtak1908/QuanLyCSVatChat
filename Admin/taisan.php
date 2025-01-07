@@ -99,7 +99,7 @@ $assets = $user->select_Assets();
                     <th>Tình trạng</th>
                     <th>Vị trí</th>
                     <th>Ngày nhập</th>
-                    <>Thao tác</
+                    <th>Thao tác</th>
                 </tr>
             </thead>
             <tbody>

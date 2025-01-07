@@ -5,27 +5,6 @@ include("connect.php");
 include("control.php");
 
 $user = new data_user();
-if (isset($img['name']) && $img['error'] === 0) {
-    $uploadDir = 'uploads/';
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
-    }
-
-    $fileName = iconv('UTF-8', 'ASCII//TRANSLIT', $img['name']);
-    $fileName = preg_replace('/[^A-Za-z0-9.\-]/', '_', $fileName);
-    $fileTmpPath = $img['tmp_name'];
-    $fileDest = $uploadDir . $fileName;
-
-    if (move_uploaded_file($fileTmpPath, $fileDest)) {
-        $user->insert_assets($name, $fileName, $type, $status, $location, $purchadate);
-        echo "File uploaded successfully: $fileDest";
-    } else {
-        echo "Failed to upload file.";
-    }
-} else {
-    echo "No file uploaded or upload error.";
-}
-
 $assets = $user->select_Assets();
 ?>
 
