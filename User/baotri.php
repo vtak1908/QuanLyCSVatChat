@@ -16,6 +16,16 @@ $maintenance = $user->select_Maintenance();
     <title>Trang Bảo Trì</title>
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .banner-text h1 {
+            color: #ffffff; /* Màu trắng */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.81); /* Đổ bóng để làm nổi bật văn bản */
+        }
+        .banner-text p {
+            color: #f8f9fa; /* Màu trắng nhạt */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.81); /* Đổ bóng để làm nổi bật văn bản */
+        }
+    </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>

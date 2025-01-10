@@ -51,7 +51,7 @@
         </div>
         <h2 class="landing-info-pretitle">Chào mừng bạn đã tới</h2>
         <h1 class="landing-info-title">Phương Đông</h1>
-        <p class="landing-info-text">Trang đăng ký của Phương Đông</p>
+        <p class="landing-info-text">Trang đăng ký của Đại học Phương Đông</p>
         <ul class="tab-switch">
             <li class="tab-switch-button login-register-form-trigger"><a href="index.php">Trang Chủ</a></li>
             <li class="tab-switch-button login-register-form-trigger"><a href="signin.php">Đăng Nhập</a></li>

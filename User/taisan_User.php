@@ -9,6 +9,16 @@ session_start();
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <title>Quản Lý Tài Sản</title>
+    <style>
+        .banner-text h1 {
+            color: #ffffff; /* Màu trắng */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.81); /* Đổ bóng để làm nổi bật văn bản */
+        }
+        .banner-text p {
+            color: #f8f9fa; /* Màu trắng nhạt */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.81); /* Đổ bóng để làm nổi bật văn bản */
+        }
+    </style>
 </head>
 <body>
 <header>

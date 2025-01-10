@@ -25,6 +25,17 @@ $status_counts = [
 while ($row = mysqli_fetch_assoc($assets)) {
     $status_counts[$row['Status']]++;
 }
+
+// Chuẩn bị dữ liệu cho biểu đồ báo cáo hoạt động bảo trì
+$maintenance_counts = [
+    'Hoàn thành' => 0,
+    'Đang xử lý' => 0,
+    'Loại bỏ' => 0,
+];
+
+while ($row = mysqli_fetch_assoc($maintenance)) {
+    $maintenance_counts[$row['MaintenanceStatus']]++;
+}
 ?>
 
 <!DOCTYPE html>
@@ -37,10 +48,20 @@ while ($row = mysqli_fetch_assoc($assets)) {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        #assetStatusChart {
+        #assetStatusChart, #maintenanceReportChart {
             max-width: 400px;
             max-height: 400px;
             margin: auto;
+        }
+    </style>
+    <style>
+        .banner-text h1 {
+            color: #ffffff; /* Màu trắng */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.81); /* Đổ bóng để làm nổi bật văn bản */
+        }
+        .banner-text p {
+            color: #f8f9fa; /* Màu trắng nhạt */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.81); /* Đổ bóng để làm nổi bật văn bản */
         }
     </style>
 </head>
@@ -99,41 +120,8 @@ while ($row = mysqli_fetch_assoc($assets)) {
 
     <section id="maintenance-report">
         <h2>Báo Cáo Hoạt Động Bảo Trì</h2>
-        <form method="POST" action="baocao.php">
-            <div class="form-group">
-                <label for="start_date">Ngày Bắt Đầu:</label>
-                <input type="date" id="start_date" name="start_date" required>
-            </div>
-            <div class="form-group">
-                <label for="end_date">Ngày Kết Thúc:</label>
-                <input type="date" id="end_date" name="end_date" required>
-            </div>
-            <button type="submit">Tạo Báo Cáo</button>
-        </form>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Tài Sản</th>
-                    <th>Mô Tả</th>
-                    <th>Ngày Bảo Trì</th>
-                    <th>Trạng Thái</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (!empty($maintenance_report)) { ?>
-                    <?php while ($row = mysqli_fetch_assoc($maintenance_report)) { ?>
-                        <tr>
-                            <td><?php echo $row['Id']; ?></td>
-                            <td><?php echo $row['AssetName']; ?></td>
-                            <td><?php echo $row['Description']; ?></td>
-                            <td><?php echo $row['MaintenanceDate']; ?></td>
-                            <td><?php echo $row['MaintenanceStatus']; ?></td>
-                        </tr>
-                    <?php } ?>
-                <?php } ?>
-            </tbody>
-        </table>
+        
+        <canvas id="maintenanceReportChart"></canvas>
     </section>
 </main>
 
@@ -183,6 +171,32 @@ while ($row = mysqli_fetch_assoc($assets)) {
                 title: {
                     display: true,
                     text: 'Tình Trạng Tài Sản'
+                }
+            }
+        },
+    });
+
+    var ctx2 = document.getElementById('maintenanceReportChart').getContext('2d');
+    var maintenanceReportChart = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: ['Hoàn thành', 'Đang xử lý', 'Loại bỏ'],
+            datasets: [{
+                label: 'Hoạt Động Bảo Trì',
+                data: [<?php echo $maintenance_counts['Hoàn thành']; ?>, <?php echo $maintenance_counts['Đang xử lý']; ?>, <?php echo $maintenance_counts['Loại bỏ']; ?>],
+                backgroundColor: ['#4CAF50', '#FFC107', '#FF0000'],
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Hoạt Động Bảo Trì'
                 }
             }
         },
