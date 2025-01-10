@@ -35,6 +35,29 @@ class data_user
         $run = mysqli_query($conn, $sql);
         return $run;
     }
+
+    // Hàm lấy danh sách bảo trì
+  
+
+    public function select_Maintenance($start, $limit)
+    {
+        global $conn;
+        $sql = "SELECT m.Id, m.MaintenanceDate, m.Description, m.MaintenanceStatus, a.Name AS AssetName
+                FROM maintenance m
+                JOIN assets a ON m.Id_Assets = a.Id_Assets
+                LIMIT $start, $limit";
+        $run = mysqli_query($conn, $sql);
+        return $run;
+    }
+
+    public function count_Maintenance()
+    {
+        global $conn;
+        $sql = "SELECT COUNT(*) AS total FROM maintenance";
+        $run = mysqli_query($conn, $sql);
+        $row = mysqli_fetch_assoc($run);
+        return $row['total'];
+    }
 }
 
 ?>

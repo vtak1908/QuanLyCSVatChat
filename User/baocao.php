@@ -6,6 +6,25 @@ include("control.php");
 $user = new data_user();
 $assets = $user->select_Assets();
 $maintenance = $user->select_Maintenance();
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $start_date = $_POST['start_date'];
+    $end_date = $_POST['end_date'];
+    $maintenance_report = $user->select_Maintenance_By_Date($start_date, $end_date);
+} else {
+    $maintenance_report = [];
+}
+
+// Chuẩn bị dữ liệu cho biểu đồ tình trạng tài sản
+$status_counts = [
+    'Tốt' => 0,
+    'Hỏng' => 0,
+    'Đang sửa chữa' => 0,
+];
+
+while ($row = mysqli_fetch_assoc($assets)) {
+    $status_counts[$row['Status']]++;
+}
 ?>
 
 <!DOCTYPE html>
@@ -13,10 +32,17 @@ $maintenance = $user->select_Maintenance();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang Bảo Trì</title>
+    <title>Báo Cáo</title>
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        #assetStatusChart {
+            max-width: 400px;
+            max-height: 400px;
+            margin: auto;
+        }
+    </style>
 </head>
 <body>
 <header>
@@ -66,60 +92,28 @@ $maintenance = $user->select_Maintenance();
 </nav>
 
 <main>
-    <section id="maintenance-request">
-        <h2>Yêu Cầu Bảo Trì</h2>
-        <form id="maintenanceForm" method="POST" action="submit_maintenance.php">
-            <div class="form-group">
-                <label for="asset">Chọn Tài Sản:</label>
-                <table id="asset-table">
-                    <thead>
-                        <tr>
-                            <th>Chọn</th>
-                            <th>Tên Tài Sản</th>
-                            <th>Hình Ảnh</th>
-                            <th>Loại</th>
-                            <th>Tình Trạng</th>
-                            <th>Vị Trí</th>
-                            <th>Ngày Mua</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php while ($row = mysqli_fetch_assoc($assets)) { ?>
-                            <tr>
-                                <td>
-                                    <input type="radio" id="asset-<?php echo $row['Id_Assets']; ?>" name="asset" value="<?php echo $row['Id_Assets']; ?>" required>
-                                </td>
-                                <td>
-                                    <label for="asset-<?php echo $row['Id_Assets']; ?>">
-                                        <?php echo $row['Name']; ?>
-                                    </label>
-                                </td>
-                                <td>
-                                    <img src="../Admin/uploads/<?php echo $row['Img']; ?>" alt="<?php echo $row['Name']; ?>" style="width: 100px; height: auto;">
-                                </td>
-                                <td><?php echo $row['Type']; ?></td>
-                                <td><?php echo $row['Status']; ?></td>
-                                <td><?php echo $row['Location']; ?></td>
-                                <td><?php echo $row['PurchaDate']; ?></td>
-                            </tr>
-                        <?php } ?>
-                    </tbody>
-                </table>
-            </div>
-            <div class="form-group">
-                <label for="description">Mô Tả Vấn Đề:</label>
-                <textarea id="description" name="description" required placeholder="Mô tả vấn đề..."></textarea>
-            </div>
-            <button type="submit">Gửi Yêu Cầu</button>
-        </form>
+    <section id="asset-report">
+        <h2>Báo Cáo Tình Trạng Tài Sản</h2>
+        <canvas id="assetStatusChart"></canvas>
     </section>
 
-    <section id="maintenance-list">
-        <h2>Danh Sách Bảo Trì</h2>
+    <section id="maintenance-report">
+        <h2>Báo Cáo Hoạt Động Bảo Trì</h2>
+        <form method="POST" action="baocao.php">
+            <div class="form-group">
+                <label for="start_date">Ngày Bắt Đầu:</label>
+                <input type="date" id="start_date" name="start_date" required>
+            </div>
+            <div class="form-group">
+                <label for="end_date">Ngày Kết Thúc:</label>
+                <input type="date" id="end_date" name="end_date" required>
+            </div>
+            <button type="submit">Tạo Báo Cáo</button>
+        </form>
         <table>
             <thead>
                 <tr>
-                   
+                    <th>ID</th>
                     <th>Tài Sản</th>
                     <th>Mô Tả</th>
                     <th>Ngày Bảo Trì</th>
@@ -127,14 +121,16 @@ $maintenance = $user->select_Maintenance();
                 </tr>
             </thead>
             <tbody>
-                <?php while ($row = mysqli_fetch_assoc($maintenance)) { ?>
-                    <tr>
-                        
-                        <td><?php echo $row['AssetName']; ?></td>
-                        <td><?php echo $row['Description']; ?></td>
-                        <td><?php echo $row['MaintenanceDate']; ?></td>
-                        <td><?php echo $row['MaintenanceStatus']; ?></td>
-                    </tr>
+                <?php if (!empty($maintenance_report)) { ?>
+                    <?php while ($row = mysqli_fetch_assoc($maintenance_report)) { ?>
+                        <tr>
+                            <td><?php echo $row['Id']; ?></td>
+                            <td><?php echo $row['AssetName']; ?></td>
+                            <td><?php echo $row['Description']; ?></td>
+                            <td><?php echo $row['MaintenanceDate']; ?></td>
+                            <td><?php echo $row['MaintenanceStatus']; ?></td>
+                        </tr>
+                    <?php } ?>
                 <?php } ?>
             </tbody>
         </table>
@@ -164,6 +160,33 @@ $maintenance = $user->select_Maintenance();
         </p>
     </div>
 </section>
-<script src="baotri.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ctx = document.getElementById('assetStatusChart').getContext('2d');
+    var assetStatusChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Tốt', 'Hỏng', 'Đang sửa chữa'],
+            datasets: [{
+                label: 'Tình Trạng Tài Sản',
+                data: [<?php echo $status_counts['Tốt']; ?>, <?php echo $status_counts['Hỏng']; ?>, <?php echo $status_counts['Đang sửa chữa']; ?>],
+                backgroundColor: ['#4CAF50', '#FF0000', '#FFC107'],
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Tình Trạng Tài Sản'
+                }
+            }
+        },
+    });
+</script>
 </body>
 </html>

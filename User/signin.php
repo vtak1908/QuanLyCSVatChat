@@ -67,7 +67,7 @@ session_start(); ?>
                                     
                                     if ($select) {
                                         // Đăng nhập thành công
-                                        echo "<script>alert('Đăng nhập thành công'); window.location=('trangchu.php');</script>";
+                                        echo "<script>alert('Đăng nhập thành công'); window.location=('index.php');</script>";
                                         // Lưu trữ thông tin người dùng trong session
                                         $_SESSION['user'] = $_POST['username'];
                                     } else {

@@ -5,6 +5,6 @@ session_unset();
 // Hủy session
 session_destroy();
 // Chuyển hướng người dùng về trang chính
-header("Location: index.php");
+header("Location: signin.php");
 exit();
 ?>

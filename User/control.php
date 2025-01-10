@@ -57,5 +57,32 @@ class data_user
          return $run;  // Trả về kết quả truy vấn
      }
     
+     public function select_AssetsStatus()
+     {
+         global $conn;
+         $sql = "SELECT * FROM assets WHERE Status = 'tốt'";
+         $run = mysqli_query($conn, $sql);
+         return $run;
+     }
+     public function select_Maintenance()
+     {
+         global $conn;
+         $sql = "SELECT m.Id, m.MaintenanceDate, m.Description, m.MaintenanceStatus, a.Name AS AssetName
+                 FROM maintenance m
+                 JOIN assets a ON m.Id_Assets = a.Id_Assets";
+         $run = mysqli_query($conn, $sql);
+         return $run;
+     }
+     public function select_Maintenance_By_Date($start_date, $end_date)
+     {
+         global $conn;
+         $sql = "SELECT m.Id, m.MaintenanceDate, m.Description, m.MaintenanceStatus, a.Name AS AssetName
+                 FROM maintenance m
+                 JOIN assets a ON m.Id_Assets = a.Id_Assets
+                 WHERE m.MaintenanceDate BETWEEN '$start_date' AND '$end_date'";
+         $run = mysqli_query($conn, $sql);
+         return $run;
+     }
+
 }
 ?>
