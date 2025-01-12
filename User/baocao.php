@@ -2,7 +2,11 @@
 session_start();
 include("connect.php");
 include("control.php");
-
+$get_user = new data_user();
+if (empty($_SESSION['user'])) {
+  echo "<script>alert('Bạn cần đăng nhập để thực hiện thao tác này');
+    window.location = 'signin.php';</script>";
+}
 
 $user = new data_user();
 $assets = $user->select_Assets();
