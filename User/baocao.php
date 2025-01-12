@@ -3,6 +3,7 @@ session_start();
 include("connect.php");
 include("control.php");
 
+
 $user = new data_user();
 $assets = $user->select_Assets();
 $maintenance = $user->select_Maintenance();
