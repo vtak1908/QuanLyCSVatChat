@@ -18,7 +18,37 @@ class data_user
 
         return $run;
     }
+   
 
+    
+    public function login($user, $pass)
+    {
+        global $conn;
+        // Chuẩn bị câu lệnh SQL với tham số đầu vào
+        $sql = "SELECT * FROM user WHERE username = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $user);
+        $stmt->execute();
+        
+        // Lấy kết quả trả về
+        $result = $stmt->get_result();
+        
+        // Kiểm tra nếu có người dùng tồn tại
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            
+            // Xác minh mật khẩu nhập vào với mật khẩu đã mã hóa trong cơ sở dữ liệu
+            if ($pass == $row['password']) {
+                // Kiểm tra vai trò của người dùng
+                if ($row['role'] === 'admin') {
+                    return $row; // Đăng nhập thành công
+                } else {
+                    return false; // Không phải admin
+                }
+            }
+        }
+        return false; // Đăng nhập thất bại
+    }
     // Hàm lấy danh sách tài sản
     public function select_Assets()
     {

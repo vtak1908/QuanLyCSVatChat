@@ -1,6 +1,14 @@
 <?php
 session_start();
 include ("control.php");
+
+
+// Kiểm tra nếu người dùng đã đăng nhập và có vai trò là admin
+if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
+  echo "<script>alert('Bạn cần đăng nhập để thực hiện thao tác này');
+  window.location = 'login.php';</script>";
+  exit();
+}
  ?>
 <!DOCTYPE html>
 <html lang="en">
