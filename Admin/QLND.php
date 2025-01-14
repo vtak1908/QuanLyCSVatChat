@@ -13,7 +13,7 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
 <html lang="en">
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Tài sản</title>
+    <title>Người dùng</title>
     <meta
       content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
       name="viewport"
@@ -330,37 +330,43 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
         </tr>
                         </thead>
                         <tbody>
-                <?php 
-                if ($users && $users->num_rows > 0) {
-                    while ($userRow = $users->fetch_assoc()) {
-                ?>
-                <tr>
-                    <td><?php echo htmlspecialchars($userRow['Id_User']); ?></td>
-                    <td><?php echo htmlspecialchars($userRow['username']); ?></td>
-                    <td><?php echo htmlspecialchars($userRow['password']); ?></td>
-                    <td><?php echo htmlspecialchars($userRow['role']); ?></td>
-                    <td>
-                        <!-- Form cập nhật -->
-                        <form method="GET" action="update_user.php" style="display:inline;">
-                            <input type="hidden" name="Id_User" value="<?php echo htmlspecialchars($userRow['Id_User']); ?>">
-                            <button type="submit" class="btn btn-warning btn-sm">Cập nhật</button>
-                        </form>
-                        <!-- Form xóa -->
-                        <form method="POST" style="display:inline;">
-                            <input type="hidden" name="Id_User" value="<?php echo htmlspecialchars($userRow['Id_User']); ?>">
-                            <button type="submit" name="delete" value="delete" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa?');">Xóa</button>
-                        </form>
-                    </td>
-                </tr>
-                <?php 
-                    }
-                } else {
-                ?>
-                <tr>
-                    <td colspan="5" class="text-center">Không có người dùng nào.</td>
-                </tr>
-                <?php } ?>
-            </tbody>
+                        <?php
+    
+        // Xử lý xóa tài khoản
+        if (isset($_POST['delete']) && isset($_POST['Id_User'])) {
+            $idToDelete = intval($_POST['Id_User']); // Ép kiểu sang số nguyên
+            $deleteResult = $user->delete_user($idToDelete);
+
+            if ($deleteResult) {
+                echo "Xóa tài khoản thành công.";
+            } else {
+                echo '<div class="alert alert-danger text-center">Xóa tài khoản thất bại. Vui lòng thử lại.</div>';
+            }
+        }?>
+                            <?php 
+                            $select = $get_user->select_all_users();
+                            foreach ($select as $user) {
+                            ?>
+                            <tr>
+                              <td><?php echo $user['Id_User'] ?></td>
+                              <td><?php echo $user['username'] ?></td>
+                              <td><?php echo $user['password'] ?></td>
+                              <td><?php echo $user['role'] ?></td>
+                              <td>
+                                <div class="form-button-action">
+                                  <button type="button" class="btn btn-link btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#updateUserModal" onclick="setUpdateModal('<?php echo $user['Id_User']; ?>', '<?php echo $user['username']; ?>', '<?php echo $user['password']; ?>', '<?php echo $user['role']; ?>')">
+                                    <i class="fa fa-edit"></i>
+                                  </button>
+                                  <button type="button" class="btn btn-link btn-danger" data-original-title="Remove">
+                                    <a href="deleteUser.php?id=<?php echo $user['Id_User'] ?>" onClick="if(confirm('Bạn có chắc chắn muốn xoá?')) return true; else return false;" class="fa fa-times"></a>
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                            <?php
+                            }
+                            ?>
+                          </tbody>
                       </table>
                     </div>
                   </div>
@@ -371,7 +377,47 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
         </div>
 
       </div>
+<!-- Modal cập nhật thông tin người dùng -->
+<div class="modal fade" id="updateUserModal" tabindex="-1" aria-labelledby="updateUserModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="updateUserModalLabel">Cập nhật thông tin người dùng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form id="updateUserForm" method="post" action="updateUser.php">
+                  <input type="hidden" name="id" id="userId">
+                  <div class="mb-3">
+                    <label for="username" class="form-label">Tên người dùng</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="password" class="form-label">Mật khẩu</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="role" class="form-label">Vai trò</label>
+                    <select class="form-control" id="role" name="role" required>
+                      <option value="admin">Admin</option>
+                      <option value="user">User</option>
+                    </select>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Cập nhật</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
 
+        <script>
+        function setUpdateModal(id, username, password, role) {
+          document.getElementById('userId').value = id;
+          document.getElementById('username').value = username;
+          document.getElementById('password').value = password;
+          document.getElementById('role').value = role;
+        }
+        </script>
       <!-- Custom template | don't include it in your project! -->
       <div class="custom-template">
         <div class="title">Settings</div>

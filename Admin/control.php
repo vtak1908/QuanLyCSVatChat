@@ -225,54 +225,28 @@ public function select_all_users()
     $stmt->execute();
     return $stmt->get_result(); // Trả về kết quả của truy vấn
 }
-public function delete_user($id) {
+public function delete_User($id)
+{
     global $conn;
-    if ($conn === null) {
-        die("Kết nối chưa được khởi tạo.");
-    }
-    $stmt = $conn->prepare("DELETE FROM user WHERE Id_User = ?");
-    $stmt->bind_param("i", $id); // Gắn tham số kiểu số nguyên
+    $sql = "DELETE FROM user WHERE Id_User = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id);
     $result = $stmt->execute();
     $stmt->close();
     return $result;
 }
 
-function updateUser($user_id, $username, $password, $role, $mysqli) {
-    // Nếu mật khẩu có thay đổi, mã hóa mật khẩu trước khi lưu
-    if (!empty($password)) {
-        $hashed_pass = password_hash($password, PASSWORD_DEFAULT);
-    } else {
-        // Nếu không thay đổi mật khẩu, giữ nguyên mật khẩu cũ
-        // Lấy mật khẩu hiện tại của người dùng từ cơ sở dữ liệu
-        $result = $mysqli->query("SELECT password FROM user WHERE Id_User = $user_id");
-        if ($result->num_rows > 0) {
-            $user = $result->fetch_assoc();
-            $hashed_pass = $user['password'];  // Giữ mật khẩu cũ
-        } else {
-            return false;  // Nếu không tìm thấy người dùng, trả về false
-        }
-    }
-
-    // Câu lệnh SQL để cập nhật người dùng
-    if ($user_id > 0) {
-        // Nếu có thay đổi mật khẩu, cập nhật tất cả các trường
-        if (!empty($password)) {
-            $stmt = $mysqli->prepare("UPDATE user SET username = ?, password = ?, role = ? WHERE Id_User = ?");
-            $stmt->bind_param("sssi", $username, $hashed_pass, $role, $user_id);
-        } else {
-            // Nếu không thay đổi mật khẩu, chỉ cập nhật username và role
-            $stmt = $mysqli->prepare("UPDATE user SET username = ?, role = ? WHERE Id_User = ?");
-            $stmt->bind_param("ssi", $username, $role, $user_id);
-        }
-
-        if ($stmt->execute()) {
-            return true;  // Cập nhật thành công
-        } else {
-            return false; // Cập nhật thất bại
-        }
-    }
-    return false;  // Nếu user_id không hợp lệ
+public function update_User($id, $username, $password, $role)
+{
+    global $conn;
+    $sql = "UPDATE users SET username = ?, password = ?, role = ? WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sssi", $username, $password, $role, $id);
+    $result = $stmt->execute();
+    $stmt->close();
+    return $result;
 }
+
 
 }
 ?>

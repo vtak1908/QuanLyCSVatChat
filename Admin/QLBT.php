@@ -13,7 +13,7 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
 <html lang="en">
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Tài sản</title>
+    <title>Bảo trì </title>
     <meta
       content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
       name="viewport"
