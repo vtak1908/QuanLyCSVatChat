@@ -11,7 +11,7 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
 <html lang="en">
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Datatables - Kaiadmin Bootstrap 5 Admin Dashboard</title>
+    <title>Tài sản</title>
     <meta
       content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
       name="viewport"
@@ -21,9 +21,6 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
       href="assets/img/kaiadmin/favicon.ico"
       type="image/x-icon"
     />
-
-
-    </style>
     <!-- Fonts and icons -->
     <script src="assets/js/plugin/webfont/webfont.min.js"></script>
     <script>
@@ -51,8 +48,6 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
 
     <!-- CSS Just for demo purpose, don't include it in your project -->
     <link rel="stylesheet" href="assets/css/demo.css" />
-    <link rel="stylesheet" href="assets/css/taisan.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   </head>
   <body>
     <div class="wrapper">
@@ -88,6 +83,7 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
             <ul class="nav nav-secondary">
               <li class="nav-item">
                 <a
+                  data-bs-toggle="collapse"
                   href="index.php"
                   class="collapsed"
                   aria-expanded="false"
@@ -103,34 +99,28 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
                 <h4 class="text-section">Quản lý</h4>
               </li>
                     <li class="nav-item">
-                      <a href="Quản lý tài sản.php">
+                      <a href="QLTS.php">
                         <i class="icon-book-open"></i>
                         <span class="sub-item">Quản lý tài sản</span>
                         
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a href="Quản lý bảo trì.php">
+                      <a href="QLBT.php">
                         <i class="icon-menu"></i>
                         <span class="sub-item">Quản lý bảo trì</span>
                         
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a href="QUản lý người dùng.php">
+                      <a href="QLND.php">
                         <i class="icon-envelope"></i>
                         <span class="sub-item">Quản lý người dùng</span>
                       </a>
                     </li>
+                    
                     <li class="nav-item">
-                      <a href="Order.php">
-                        <i class="icon-calendar"></i>
-                        <span class="sub-item">Đơn đặt hàng</span>
-                        
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a href="Report.php">
+                      <a href="baocao.php">
                         <i class="icon-chart"></i>
                         <span class="sub-item">Báo cáo</span>
                         
@@ -179,23 +169,16 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
                 class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex"
               >
                 <div class="input-group">
-                <form method="GET">
-                <div class="input-group">
-                <input
-                type="text"
-                name="search"
-                placeholder="Search ..."
-                class="form-control"
-                value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"
-              />
-              <div class="input-group-prepend">
-              <button type="submit" class="btn btn-search pe-1">
-               <i class="fa fa-search search-icon"></i>
-              </button>
-              </div>
-              </div>
-              </form>
-
+                  <div class="input-group-prepend">
+                    <button type="submit" class="btn btn-search pe-1">
+                      <i class="fa fa-search search-icon"></i>
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search ..."
+                    class="form-control"
+                  />
                 </div>
               </nav>
 
@@ -238,11 +221,60 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
                     <i class="fa fa-bell"></i>
                     <span class="notification"></span>
                   </a>
-                </li>8               
+                </li>
+                
+                <li class="nav-item topbar-user dropdown hidden-caret">
+                  <?php if (isset($_SESSION['user'])) {
+                    
+                    { ?>
+                  <a
+                    class="dropdown-toggle profile-pic"
+                    data-bs-toggle="dropdown"
+                    href="#"
+                    aria-expanded="false"
+                  >
+                    <div class="avatar-sm">
+                      <img
+                        src="assets/img/profile.jpg"
+                        alt="..."
+                        class="avatar-img rounded-circle"
+                      />
+                    </div>
+                    <span class="profile-username">
+                      <span class="op-7">Hi,</span>
+                      <span class="fw-bold"><?php echo ($_SESSION['user']); ?></span>
+                    </span>
+                  </a>
+                  <ul class="dropdown-menu dropdown-user animated fadeIn">
+                    <div class="dropdown-user-scroll scrollbar-outer">
+                      <li>
+                        <div class="user-box">
+                          <div class="avatar-lg">
+                            <img
+                              src="assets/img/profile.jpg"
+                              alt="image profile"
+                              class="avatar-img rounded"
+                            />
+                          </div>
+                          <div class="u-text">
+                            <h4><?php echo ($_SESSION['user']) ?></h4>
+                           
+                          </div>
+                        </div>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="logout.php">Đăng xuất</a>
+                      </li>
+                    </div>
+                  </ul>
+                  <?php }
+                  }else{
+                    ?><a href="login.php">Đăng nhập</a>
+                  <?php } ?>
+                </li>
               </ul>
             </div>
           </nav>
-          <!-- End Navbar -->
         </div><br><br><br>
         <?php
 include("connect.php");
@@ -329,30 +361,7 @@ while ($row = mysqli_fetch_assoc($maintenance)) {
 
 
        
-    <section class="footer">
-        <div class="visit-us">
-            <p>&copy; 2024 - Đại Học Phương Đông  - Hệ Thống Quản Lý Cơ Sở Vật Chất</p>
-            <p><i class="fas fa-phone"></i>  0243 623 0234</p>
-            <p><i class="fas fa-envelope"></i>  contact@phuongdong.edu.vn</p>
-            <p><i class="fas fa-map-marker-alt"></i>  Cơ sở 1: 171 Trung Kính, Yên Hòa, Cầu Giấy, Hà Nội</p>
-            <p><i class="fas fa-map-marker-alt"></i>  Cơ sở 2: Số 4, ngõ chùa Hưng, phố Minh Khai, Hai Bà Trưng, Hà Nội</p>
-        </div>
-        <div class="socials">
-            <h3>FOLLOW OUR SOCIALS</h3>
-            <p>
-                <a href="https://www.instagram.com/" target="_blank"> 
-                    <i class="fa-brands fa-instagram"></i> 
-                </a>
-                <a href="https://www.facebook.com/" target="_blank"> 
-                    <i class="fa-brands fa-facebook-f"></i> 
-                </a>
-                <a href="https://discord.com/" target="_blank"> 
-                    <i class="fa-brands fa-discord"></i> 
-                </a>
-                
-            </p>
-        </div>
-    </section>
+    
       <!-- Custom template | don't include it in your project! -->
       <div class="custom-template">
         <div class="title">Settings</div>

@@ -288,43 +288,29 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
                 <div class="card">
                   <div class="card-header">
                     <div class="d-flex align-items-center">
-                      <h4 class="card-title">Quản lý yêu cầu bảo trì</h4>
+                      <h4 class="card-title">Quản lý người dùng</h4>
                      
                     </div>
                   </div>
-        <script>
-            function setUpdateModal(id, status) {
-                document.getElementById('id').value = id;
-                document.getElementById('status').value = status;
+       
+                  <?php
+       
+       
+
+        // Xử lý xóa tài khoản
+        if (isset($_POST['delete']) && isset($_POST['Id_User'])) {
+            $idToDelete = intval($_POST['Id_User']); // Ép kiểu sang số nguyên
+            $deleteResult = $get_user->delete_user($idToDelete);
+
+            if ($deleteResult) {
+                echo "Xóa tài khoản thành công.";
+            } else {
+                echo '<div class="alert alert-danger text-center">Xóa tài khoản thất bại. Vui lòng thử lại.</div>';
             }
-        </script>
+        }
 
-        <!-- Modal -->
-            <div class="modal fade" id="updateRowModal" tabindex="-1" aria-labelledby="updateRowModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="updateRowModalLabel">Cập nhật trạng thái bảo trì</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="updateStatusForm" method="post" action="updateMaintenanceStatus.php">
-                    <input type="hidden" name="id" id="id">
-                    <div class="mb-3">
-                        <label for="status" class="form-label">Trạng thái</label>
-                        <select class="form-control" id="status" name="status" required>
-                        <option value="Đang xử lý">Đang xử lý</option>
-                        <option value="Hoàn thành">Hoàn thành</option>
-                        <option value="Loại bỏ">Loại bỏ</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Cập nhật</button>
-                    </form>
-                </div>
-                </div>
-            </div>
-            </div>
-
+        $users = $get_user->select_all_users();
+        ?>
         <div class="container">
           <div class="page-inner">
                     <div class="table-responsive">
@@ -334,38 +320,47 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
                       >
                         <thead>
                         <tr>
-            <th>Tên tài sản</th>
-            <th>Ngày bảo trì</th>
-            <th>Mô tả</th>
-            <th>Trạng thái bảo trì</th>
-            <th style="width: 10%">Hành động</th>
+                        <tr>
+                    <th>ID</th>
+                    <th>Tên người dùng</th>
+                    <th>Mật khẩu</th>
+                    <th>Quyền người dùng</th>
+                    <th>Hành động</th>
+                </tr>
         </tr>
                         </thead>
                         <tbody>
-                        <?php 
-        $select = $get_user->select_Maintenance();
-        foreach ($select as $se) {
-        ?>
-        <tr>
-            <td><?php echo $se['AssetName'] ?></td>
-            <td><?php echo $se['MaintenanceDate'] ?></td>
-            <td><?php echo $se['Description'] ?></td>
-            <td><?php echo $se['MaintenanceStatus'] ?></td>
-            <td>
-                <div class="form-button-action">
-                    <button type="button" class="btn btn-link btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#updateRowModal" onclick="setUpdateModal('<?php echo $se['Id']; ?>', '<?php echo $se['MaintenanceStatus']; ?>')">
-                        <i class="fa fa-edit"></i>
-                    </button>
-                    <button type="button" class="btn btn-link btn-danger" data-original-title="Remove">
-                        <a href="deleteMaintenance.php?id=<?php echo $se['Id'] ?>" onClick="if(confirm('Bạn có chắc chắn muốn xoá?')) return true; else return false;" class="fa fa-times"></a>
-                    </button>
-                </div>
-            </td>
-        </tr>
-        <?php
-        }
-        ?>
-                        </tbody>
+                <?php 
+                if ($users && $users->num_rows > 0) {
+                    while ($userRow = $users->fetch_assoc()) {
+                ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($userRow['Id_User']); ?></td>
+                    <td><?php echo htmlspecialchars($userRow['username']); ?></td>
+                    <td><?php echo htmlspecialchars($userRow['password']); ?></td>
+                    <td><?php echo htmlspecialchars($userRow['role']); ?></td>
+                    <td>
+                        <!-- Form cập nhật -->
+                        <form method="GET" action="update_user.php" style="display:inline;">
+                            <input type="hidden" name="Id_User" value="<?php echo htmlspecialchars($userRow['Id_User']); ?>">
+                            <button type="submit" class="btn btn-warning btn-sm">Cập nhật</button>
+                        </form>
+                        <!-- Form xóa -->
+                        <form method="POST" style="display:inline;">
+                            <input type="hidden" name="Id_User" value="<?php echo htmlspecialchars($userRow['Id_User']); ?>">
+                            <button type="submit" name="delete" value="delete" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa?');">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+                <?php 
+                    }
+                } else {
+                ?>
+                <tr>
+                    <td colspan="5" class="text-center">Không có người dùng nào.</td>
+                </tr>
+                <?php } ?>
+            </tbody>
                       </table>
                     </div>
                   </div>

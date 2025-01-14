@@ -153,14 +153,14 @@ if (isset($_GET['Id_Assets'])) {
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a href="Quản lý bảo trì.php">
+                      <a href="QLTS.php">
                         <i class="icon-menu"></i>
                         <span class="sub-item">Quản lý bảo trì</span>
                         
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a href="QUản lý người dùng.php">
+                      <a href="QLND.php">
                         <i class="icon-envelope"></i>
                         <span class="sub-item">Quản lý người dùng</span>
                       </a>

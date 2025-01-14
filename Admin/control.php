@@ -176,14 +176,27 @@ class data_user
         $run = mysqli_query($conn, $sql);
         return $run;
     }
-    public function Maintenance_status($Id, $MaintenanceStatus)
+    public function delete_Maintenance($id)
     {
         global $conn;
-        $sql = "UPDATE maintenance SET MaintenanceStatus = '$MaintenanceStatus' WHERE Id = '$Id'";
-        $run = mysqli_query($conn, $sql);
-        return $run;
+        $sql = "DELETE FROM maintenance WHERE Id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
     }
-    
+    public function update_Maintenance_Status($id, $status)
+{
+    global $conn;
+    $sql = "UPDATE maintenance SET MaintenanceStatus = ? WHERE Id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("si", $status, $id);
+    $result = $stmt->execute();
+    $stmt->close();
+    return $result;
+}
+
     public function countProcessedMaintenance()
     {
         global $conn;
