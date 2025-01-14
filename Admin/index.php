@@ -109,14 +109,14 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a href="Quản lý bảo trì.php">
+                      <a href="QLBT.php">
                         <i class="icon-menu"></i>
                         <span class="sub-item">Quản lý bảo trì</span>
                         
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a href="QUản lý người dùng.php">
+                      <a href="QLND.php">
                         <i class="icon-envelope"></i>
                         <span class="sub-item">Quản lý người dùng</span>
                       </a>

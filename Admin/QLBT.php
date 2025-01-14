@@ -8,7 +8,6 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
   window.location = 'login.php';</script>";
   exit();
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -282,7 +281,19 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
           <!-- End Navbar -->
           <!-- End Navbar -->
         </div>
-        <script>
+        <div class="container">
+          <div class="page-inner">
+            
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="d-flex align-items-center">
+                      <h4 class="card-title">Danh sách yêu cầu bảo trì</h4> 
+                    </div>
+                  </div>
+                 <div class="card-body">
+                 <script>
             function setUpdateModal(Id, MaintenanceStatus) {
                 document.getElementById('Id').value = Id;
                 document.getElementById('MaintenanceStatus').value = MaintenanceStatus;
@@ -294,20 +305,18 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
             <div class="modal-dialog">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="updateRowModalLabel">Cập nhật trạng thái bảo trì</h5>
+                    <h5 class="modal-title" id="updateRowModalLabel">Cập nhật trạng thái đơn hàng</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="updateStatusForm" method="post">
-                    <input type="hidden" name="id_order" id="id_order">
+                    <form id="updateMaintenanceStatusForm" method="post">
+                    <input type="hidden" name="Id" id="Id">
                     <div class="mb-3">
-                        <label for="status" class="form-label">Trạng thái</label>
-                        <select class="form-control" id="status" name="status" required>
-                        <option value="Chờ">Chờ</option>
+                        <label for="MaintenanceStatus" class="form-label">Trạng thái</label>
+                        <select class="form-control" id="MaintenanceStatus" name="MaintenanceStatus" required>                  
                         <option value="Đang xử lý">Đang xử lý</option>
-                        <option value="Đang vận chuyển">Loại bỏ</option>
                         <option value="Hoàn thành">Hoàn thành</option>
-                      
+                        <option value="Loại bỏ">Loại bỏ</option>
                         </select>
                     </div>
                     <button type="submit" class="btn btn-primary">Cập nhật</button>
@@ -317,10 +326,10 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
                 <?php 
                 if(isset($_POST['Id']) && isset($_POST['MaintenanceStatus'])){
                     $Id = $_POST['Id'];
-                    $status = $_POST['MaintenanceStatus'];
+                    $MaintenanceStatus = $_POST['MaintenanceStatus'];
 
-                    $update_status = $get_data->Maintenance_status($Id, $MaintenanceStatus);
-                    if($update_status){
+                    $update_MaintenanceStatus = $get_data->Maintenance_status($Id, $MaintenanceStatus);
+                    if($update_MaintenanceStatus){
                         echo "<script>alert('Cập nhật trạng thái thành công');
                         </script>";
                     } else {
@@ -360,19 +369,12 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
                             <td><?php echo $se['MaintenanceStatus'] ?></td>
                             <td>
                               <div class="form-button-action">
-                                <button
-                                  type="button"
-                                    class="btn btn-link btn-primary btn-lg"
-                                >
-                                  <a href="maintenanceDetail.php?id=<?php echo $se['Id'] ?>" class="fas fa-align-justify"></a>
-                                </button>
-                                <button
-                                  type="button"
-                                    class="btn btn-link btn-danger"
-                                    data-original-title="Remove"
-                                >
-                                  <a href="deleteMaintenance.php?id=<?php echo $se['Id'] ?>" onClick="if(confirm('Bạn có chắc chắn muốn xoá?')) return true; else return false;" class="fa fa-times"></a>
-                                </button>
+                              <button
+                                type="button"
+                                class="btn btn-link btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#updateRowModal" onclick="setUpdateModal('<?php echo $se['Id']; ?>', '<?php echo $se['MaintenanceStatus']; ?>')">
+                                <i class="fa fa-edit"></i>
+                              </button>
+                                
                               </div>
                             </td>
                           </tr>
