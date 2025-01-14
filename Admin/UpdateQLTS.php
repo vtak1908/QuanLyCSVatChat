@@ -1,9 +1,14 @@
 <?php
 session_start();
 include("control.php");
-$get_user = new data_user();    
+$get_user = new data_user();
+// Kiểm tra nếu người dùng đã đăng nhập và có vai trò là admin
+if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
+  echo "<script>alert('Bạn cần đăng nhập để thực hiện thao tác này');
+  window.location = 'login.php';</script>";
+  exit();
+}
 
-// Kiểm tra nếu có yêu cầu POST
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id_con = $_POST['Id_Assets'];
     $name = $_POST['Name'];
@@ -13,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $purchadate = $_POST['PurchaDate'];
 
     // Xử lý upload ảnh
-    $img = $row['Img']; // Giữ nguyên ảnh cũ mặc định
+    $img = $_POST['current_img']; // Giữ nguyên ảnh cũ mặc định
     if (!empty($_FILES['Image']['name'])) {
         $img = basename($_FILES['Image']['name']);
         $target_dir = "uploads/";
@@ -21,14 +26,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if (!move_uploaded_file($_FILES['Image']['tmp_name'], $target_file)) {
             echo "<script>alert('Không thể upload file!');</script>";
-            $img = $row['Img']; // Giữ ảnh cũ nếu lỗi
+            $img = $_POST['current_img']; // Giữ ảnh cũ nếu lỗi
         }
     }
 
     // Gọi hàm update
     $update = $get_user->update_assets($id_con, $name, $img, $type, $status, $location, $purchadate);
     if ($update) {
-        echo "<script>alert('Cập nhật thành công!'); window.location.href='Quản lý tài sản.php';</script>";
+        echo "<script>alert('Cập nhật thành công!'); window.location.href='QLTS.php';</script>";
         exit();
     } else {
         echo "<script>alert('Cập nhật thất bại!');</script>";
@@ -48,132 +53,385 @@ if (isset($_GET['Id_Assets'])) {
     die("ID tài sản không hợp lệ!");
 }
 ?>
-
 <!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cập nhật tài sản</title>
-    <style>
-        /* Giao diện hiện đại và đẹp */
-        body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-        }
-        header {
-            background-color: #007bff;
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-        }
-        header h1 {
-            margin: 0;
-            font-size: 2em;
-            letter-spacing: 1px;
-        }
-        form.update-form {
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        form.update-form h2 {
-            text-align: center;
-            color: #007bff;
-            margin-bottom: 20px;
-        }
-        form.update-form .form-group {
-            margin-bottom: 15px;
-        }
-        form.update-form label {
-            font-weight: bold;
-            margin-bottom: 5px;
-            display: block;
-        }
-        form.update-form input, 
-        form.update-form select, 
-        form.update-form button {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            font-size: 1em;
-        }
-        form.update-form button {
-            background-color: #007bff;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        form.update-form button:hover {
-            background-color: #0056b3;
-        }
-        .current-image {
-            text-align: center;
-            margin: 20px 0;
-        }
-        .current-image img {
-            max-width: 100px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-        .back-btn {
-            display: inline-block;
-            margin: 20px auto;
-            text-decoration: none;
-            padding: 10px 20px;
-            background-color: #e0e0e0;
-            color: #333;
-            border-radius: 5px;
-        }
-        .back-btn:hover {
-            background-color: #ccc;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Cập nhật thông tin tài sản</h1>
-    </header>
-    <form class="update-form" method="POST" enctype="multipart/form-data">
-        <h2>Thông tin tài sản</h2>
-        <input type="hidden" name="Id_Assets" value="<?php echo $row['Id_Assets']; ?>">
-        <div class="form-group">
-            <label for="assetName">Tên tài sản</label>
-            <input type="text" name="Name" value="<?php echo htmlspecialchars($row['Name']); ?>" required>
+<html lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Tài sản</title>
+    <meta
+      content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
+      name="viewport"
+    />
+    <link
+      rel="icon"
+      href="assets/img/kaiadmin/favicon.ico"
+      type="image/x-icon"
+    />
+
+    <!-- Fonts and icons -->
+    <script src="assets/js/plugin/webfont/webfont.min.js"></script>
+    <script>
+      WebFont.load({
+        google: { families: ["Public Sans:300,400,500,600,700"] },
+        custom: {
+          families: [
+            "Font Awesome 5 Solid",
+            "Font Awesome 5 Regular",
+            "Font Awesome 5 Brands",
+            "simple-line-icons",
+          ],
+          urls: ["assets/css/fonts.min.css"],
+        },
+        active: function () {
+          sessionStorage.fonts = true;
+        },
+      });
+    </script>
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/css/plugins.min.css" />
+    <link rel="stylesheet" href="assets/css/kaiadmin.min.css" />
+
+    <!-- CSS Just for demo purpose, don't include it in your assets -->
+    <link rel="stylesheet" href="assets/css/demo.css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <!-- Sidebar -->
+      <div class="sidebar" data-background-color="dark">
+        <div class="sidebar-logo">
+          <!-- Logo Header -->
+          <div class="logo-header" data-background-color="dark">
+            <a href="index.php" class="logo">
+              <img
+                src="assets/img/kaiadmin/logo_light.svg"
+                alt="navbar brand"
+                class="navbar-brand"
+                height="20"
+              />
+            </a>
+            <div class="nav-toggle">
+              <button class="btn btn-toggle toggle-sidebar">
+                <i class="gg-menu-right"></i>
+              </button>
+              <button class="btn btn-toggle sidenav-toggler">
+                <i class="gg-menu-left"></i>
+              </button>
+            </div>
+            <button class="topbar-toggler more">
+              <i class="gg-more-vertical-alt"></i>
+            </button>
+          </div>
+          <!-- End Logo Header -->
         </div>
-        <div class="form-group">
-            <label for="assetImage">Hình ảnh</label>
-            <input type="file" name="Image">
-            <div class="current-image">
-                <p>Hình ảnh hiện tại:</p>
-                <<img src="uploads/<?php echo htmlspecialchars($row['Img']); ?>" alt="Current Image">
+        <div class="sidebar-wrapper scrollbar scrollbar-inner">
+          <div class="sidebar-content">
+            <ul class="nav nav-secondary">
+              <li class="nav-item">
+                <a
+                  data-bs-toggle="collapse"
+                  href="index.php"
+                  class="collapsed"
+                  aria-expanded="false"
+                >
+                  <i class="fas fa-home"></i>
+                  <p>Trang chủ</p>
+                </a>
+              </li>
+              <li class="nav-section">
+                <span class="sidebar-mini-icon">
+                  <i class="fa fa-ellipsis-h"></i>
+                </span>
+                <h4 class="text-section">Quản lý</h4>
+              </li>
+                    <li class="nav-item">
+                      <a href="QLTS.php">
+                        <i class="icon-book-open"></i>
+                        <span class="sub-item">Quản lý tài sản</span>
+                        
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="Quản lý bảo trì.php">
+                        <i class="icon-menu"></i>
+                        <span class="sub-item">Quản lý bảo trì</span>
+                        
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="QUản lý người dùng.php">
+                        <i class="icon-envelope"></i>
+                        <span class="sub-item">Quản lý người dùng</span>
+                      </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                      <a href="baocao.php">
+                        <i class="icon-chart"></i>
+                        <span class="sub-item">Báo cáo</span>
+                        
+                      </a>
+                    </li>
+                  
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- End Sidebar -->
+
+      <div class="main-panel">
+        <div class="main-header">
+          <div class="main-header-logo">
+            <!-- Logo Header -->
+            <div class="logo-header" data-background-color="dark">
+              <a href="index.php" class="logo">
+                <img
+                  src="assets/img/kaiadmin/logo_light.svg"
+                  alt="navbar brand"
+                  class="navbar-brand"
+                  height="20"
+                />
+              </a>
+              <div class="nav-toggle">
+                <button class="btn btn-toggle toggle-sidebar">
+                  <i class="gg-menu-right"></i>
+                </button>
+                <button class="btn btn-toggle sidenav-toggler">
+                  <i class="gg-menu-left"></i>
+                </button>
+              </div>
+              <button class="topbar-toggler more">
+                <i class="gg-more-vertical-alt"></i>
+              </button>
+            </div>
+            <!-- End Logo Header -->
+          </div>
+          <!-- Navbar Header -->
+          <nav
+            class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom"
+          >
+            <div class="container-fluid">
+              <nav
+                class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <button type="submit" class="btn btn-search pe-1">
+                      <i class="fa fa-search search-icon"></i>
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search ..."
+                    class="form-control"
+                  />
+                </div>
+              </nav>
+
+              <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
+                <li
+                  class="nav-item topbar-icon dropdown hidden-caret d-flex d-lg-none"
+                >
+                  <a
+                    class="nav-link dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                    href="#"
+                    role="button"
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                  >
+                    <i class="fa fa-search"></i>
+                  </a>
+                  <ul class="dropdown-menu dropdown-search animated fadeIn">
+                    <form class="navbar-left navbar-form nav-search">
+                      <div class="input-group">
+                        <input
+                          type="text"
+                          placeholder="Search ..."
+                          class="form-control"
+                        />
+                      </div>
+                    </form>
+                  </ul>
+                </li>
+                <li class="nav-item topbar-icon dropdown hidden-caret">
+                  <a
+                    class="nav-link dropdown-toggle"
+                    href="#"
+                    id="notifDropdown"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  >
+                    <i class="fa fa-bell"></i>
+                    <span class="notification"></span>
+                  </a>
+                </li>
+                
+                <li class="nav-item topbar-user dropdown hidden-caret">
+                  <?php if (isset($_SESSION['user'])) {
+                    
+                    { ?>
+                  <a
+                    class="dropdown-toggle profile-pic"
+                    data-bs-toggle="dropdown"
+                    href="#"
+                    aria-expanded="false"
+                  >
+                    <div class="avatar-sm">
+                      <img
+                        src="assets/img/profile.jpg"
+                        alt="..."
+                        class="avatar-img rounded-circle"
+                      />
+                    </div>
+                    <span class="profile-username">
+                      <span class="op-7">Hi,</span>
+                      <span class="fw-bold"><?php echo ($_SESSION['user']); ?></span>
+                    </span>
+                  </a>
+                  <ul class="dropdown-menu dropdown-user animated fadeIn">
+                    <div class="dropdown-user-scroll scrollbar-outer">
+                      <li>
+                        <div class="user-box">
+                          <div class="avatar-lg">
+                            <img
+                              src="assets/img/profile.jpg"
+                              alt="image profile"
+                              class="avatar-img rounded"
+                            />
+                          </div>
+                          <div class="u-text">
+                            <h4><?php echo ($_SESSION['user']) ?></h4>
+                           
+                          </div>
+                        </div>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="logout.php">Đăng xuất</a>
+                      </li>
+                    </div>
+                  </ul>
+                  <?php }
+                  }else{
+                    ?><a href="login.php">Đăng nhập</a>
+                  <?php } ?>
+                </li>
+              </ul>
+            </div>
+          </nav>
+          <!-- End Navbar -->
+        </div>
+        <div class="container">
+          <div class="page-inner">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Cập nhật Tài sản</div>
+                </div>
+                <div class="card-body">
+                    <?php
+                    if (isset($_GET['Id_Assets'])) {
+                        $Id_Assets = $_GET['Id_Assets'];
+                        $select_ass_id = $get_user->select_AssetById($Id_Assets);
+                        if ($select_ass_id) {
+                            foreach ($select_ass_id as $se_ass) { ?>
+                                <div class="row">
+                                    <form class="update-form" method="POST" enctype="multipart/form-data">
+                                        <input type="hidden" name="Id_Assets" value="<?php echo $se_ass['Id_Assets']; ?>">
+                                        <input type="hidden" name="current_img" value="<?php echo $se_ass['Img']; ?>">
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label>Tên tài sản</label>
+                                                <input type="text" value="<?php echo $se_ass['Name']; ?>" class="form-control" name="Name" placeholder="Tên tài sản" />
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label>Ảnh</label>
+                                                <input name="Image" type="file" class="form-control" accept=".jpg, .jpeg, .png" />
+                                                <div class="current-image">
+                                                    <p>Hình ảnh hiện tại:</p>
+                                                    <img src="uploads/<?php echo htmlspecialchars($se_ass['Img']); ?>" alt="Current Image" width="100">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label>Loại tài sản</label>
+                                                <input type="text" value="<?php echo $se_ass['Type']; ?>" class="form-control" name="Type" placeholder="Loại tài sản" />
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label>Tình Trạng</label>
+                                                <input type="text" value="<?php echo $se_ass['Status']; ?>" class="form-control" name="Status" placeholder="Tình trạng" />
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label>Vị trí</label>
+                                                <input type="text" value="<?php echo $se_ass['Location']; ?>" class="form-control" name="Location" placeholder="Vị trí" />
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <label>Ngày nhập</label>
+                                                <input value="<?php echo $se_ass['PurchaDate']; ?>" class="form-control" type="date" name="PurchaDate" required>
+                                            </div>
+                                        </div>
+                                       
+                                        <div class="modal-footer border-0">
+                                            <button type="submit" name="txtsub" class="btn btn-primary">Cập nhật</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            <?php }
+                        } else {
+                            echo "Tài sản không tồn tại.";
+                        }
+                    } else {
+                        echo "ID tài sản không hợp lệ.";
+                    }
+
+                    if (isset($_POST['txtsub'])) {
+                        $update = $get_user->update_assets(
+                            $_POST['Id_Assets'],
+                            $_POST['Name'],
+                            $_POST['current_img'],
+                            $_POST['Type'],
+                            $_POST['Status'],
+                            $_POST['Location'],
+                            $_POST['PurchaDate']
+                        );
+
+                        if ($update) {
+                            // Handle main product image upload
+                            if (!empty($_FILES['Image']['name'])) {
+                                $mainImage = $_FILES['Image']['name'];
+                                if (!move_uploaded_file($_FILES['Image']['tmp_name'], 'uploads/' . $mainImage)) {
+                                    echo "Error uploading main image<br>";
+                                }
+                            }
+
+                            echo "<script>alert('Cập nhật tài sản thành công'); window.location='QLTS.php';</script>";
+                        } else {
+                            echo "<script>alert('Cập nhật thất bại')</script>";
+                        }
+                    }
+                    ?>
+                </div>
             </div>
         </div>
-        <div class="form-group">
-            <label for="assetType">Loại tài sản</label>
-            <input type="text" name="Type" value="<?php echo htmlspecialchars($row['Type']); ?>" required>
-        </div>
-        <div class="form-group">
-            <label for="assetStatus">Tình trạng</label>
-            <input type="text" name="Status" value="<?php echo htmlspecialchars($row['Status']); ?>" required>
-        </div>
-        <div class="form-group">
-            <label for="assetLocation">Vị trí</label>
-            <input type="text" name="Location" value="<?php echo htmlspecialchars($row['Location']); ?>" required>
-        </div>
-        <div class="form-group">
-            <label for="purchaseDate">Ngày mua</label>
-            <input type="date" name="PurchaDate" value="<?php echo $row['PurchaDate']; ?>" required>
-        </div>
-        <button type="submit">Cập nhật</button>
-    </form>
-    <a href="list_assets.php" class="back-btn">Quay lại</a>
-</body>
+    </div>
+</div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </body>
 </html>

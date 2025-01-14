@@ -1,18 +1,58 @@
 <?php
 session_start();
-
+include("control.php");
+$get_user = new data_user();
 // Kiểm tra nếu người dùng đã đăng nhập và có vai trò là admin
 if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
   echo "<script>alert('Bạn cần đăng nhập để thực hiện thao tác này');
   window.location = 'login.php';</script>";
   exit();
 }
- ?>
+
+$get_Data = new data_user();
+
+if (isset($_POST['txtsub'])) {
+    $name = $_POST['name'];
+    $type = $_POST['type'];
+    $status = $_POST['status'];
+    $location = $_POST['location'];
+    $purchaDate = $_POST['purchaDate'];
+
+    // Kiểm tra xem tệp ảnh có được tải lên không
+    if (isset($_FILES["img"]) && $_FILES["img"]["error"] == 0) {
+        // Xử lý việc tải lên tệp ảnh
+        $target_dir = "uploads/";
+        $target_file = $target_dir . basename($_FILES["img"]["name"]);
+        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+
+        // Kiểm tra xem tệp có phải là ảnh thật hay không
+        $check = getimagesize($_FILES["img"]["tmp_name"]);
+        if ($check !== false) {
+            if (move_uploaded_file($_FILES["img"]["tmp_name"], $target_file)) {
+                // Thêm tài sản vào cơ sở dữ liệu
+                $result = $get_Data->insert_assets($name, basename($_FILES["img"]["name"]), $type, $status, $location, $purchaDate);
+
+                if ($result) {
+                    echo "<script>alert('Thêm tài sản thành công');</script>";
+                } else {
+                    echo "<script>alert('Thêm tài sản thất bại');</script>";
+                }
+            } else {
+                echo "<script>alert('Có lỗi xảy ra khi tải lên tệp của bạn.');</script>";
+            }
+        } else {
+            echo "<script>alert('Tệp không phải là ảnh.');</script>";
+        }
+    } else {
+        echo "<script>alert('Không có tệp ảnh nào được tải lên.');</script>";
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Datatables - Kaiadmin Bootstrap 5 Admin Dashboard</title>
+    <title>Tài sản</title>
     <meta
       content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
       name="viewport"
@@ -50,8 +90,6 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
 
     <!-- CSS Just for demo purpose, don't include it in your project -->
     <link rel="stylesheet" href="assets/css/demo.css" />
-    <link rel="stylesheet" href="assets/css/taisan.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   </head>
   <body>
     <div class="wrapper">
@@ -87,7 +125,8 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
             <ul class="nav nav-secondary">
               <li class="nav-item">
                 <a
-                  href="Trangchu.php"
+                  data-bs-toggle="collapse"
+                  href="index.php"
                   class="collapsed"
                   aria-expanded="false"
                 >
@@ -102,7 +141,7 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
                 <h4 class="text-section">Quản lý</h4>
               </li>
                     <li class="nav-item">
-                      <a href="Quản lý tài sản.php">
+                      <a href="QLTS.php">
                         <i class="icon-book-open"></i>
                         <span class="sub-item">Quản lý tài sản</span>
                         
@@ -121,13 +160,7 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
                         <span class="sub-item">Quản lý người dùng</span>
                       </a>
                     </li>
-                    <li class="nav-item">
-                      <a href="Order.php">
-                        <i class="icon-calendar"></i>
-                        <span class="sub-item">Đơn đặt hàng</span>
-                        
-                      </a>
-                    </li>
+                    
                     <li class="nav-item">
                       <a href="baocao.php">
                         <i class="icon-chart"></i>
@@ -178,23 +211,16 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
                 class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex"
               >
                 <div class="input-group">
-                <form method="GET">
-                <div class="input-group">
-                <input
-                type="text"
-                name="search"
-                placeholder="Search ..."
-                class="form-control"
-                value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>"
-              />
-              <div class="input-group-prepend">
-              <button type="submit" class="btn btn-search pe-1">
-               <i class="fa fa-search search-icon"></i>
-              </button>
-              </div>
-              </div>
-              </form>
-
+                  <div class="input-group-prepend">
+                    <button type="submit" class="btn btn-search pe-1">
+                      <i class="fa fa-search search-icon"></i>
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search ..."
+                    class="form-control"
+                  />
                 </div>
               </nav>
 
@@ -237,221 +263,196 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
                     <i class="fa fa-bell"></i>
                     <span class="notification"></span>
                   </a>
-                </li>8               
+                </li>
+                
+                <li class="nav-item topbar-user dropdown hidden-caret">
+                  <?php if (isset($_SESSION['user'])) {
+                    
+                    { ?>
+                  <a
+                    class="dropdown-toggle profile-pic"
+                    data-bs-toggle="dropdown"
+                    href="#"
+                    aria-expanded="false"
+                  >
+                    <div class="avatar-sm">
+                      <img
+                        src="assets/img/profile.jpg"
+                        alt="..."
+                        class="avatar-img rounded-circle"
+                      />
+                    </div>
+                    <span class="profile-username">
+                      <span class="op-7">Hi,</span>
+                      <span class="fw-bold"><?php echo ($_SESSION['user']); ?></span>
+                    </span>
+                  </a>
+                  <ul class="dropdown-menu dropdown-user animated fadeIn">
+                    <div class="dropdown-user-scroll scrollbar-outer">
+                      <li>
+                        <div class="user-box">
+                          <div class="avatar-lg">
+                            <img
+                              src="assets/img/profile.jpg"
+                              alt="image profile"
+                              class="avatar-img rounded"
+                            />
+                          </div>
+                          <div class="u-text">
+                            <h4><?php echo ($_SESSION['user']) ?></h4>
+                           
+                          </div>
+                        </div>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="logout.php">Đăng xuất</a>
+                      </li>
+                    </div>
+                  </ul>
+                  <?php }
+                  }else{
+                    ?><a href="login.php">Đăng nhập</a>
+                  <?php } ?>
+                </li>
               </ul>
             </div>
           </nav>
           <!-- End Navbar -->
-        </div><br><br><br>
-        <main>
-    <section id="assetList">
-        <h2>Danh Sách Tài Sản</h2>
-        <!-- Nút mở modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAssetModal">
-    Thêm mới tài sản
-</button>
+          <!-- End Navbar -->
+        </div>
 
-<!-- Modal -->
-<div class="modal fade" id="addAssetModal" tabindex="-1" aria-labelledby="addAssetModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addAssetModalLabel">Thêm Tài Sản</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="container">
+          <div class="page-inner">
+            
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="d-flex align-items-center">
+                      <h4 class="card-title">Tài sản</h4>
+                      <button
+                        class="btn btn-primary btn-round ms-auto"
+                        data-bs-toggle="modal"
+                        data-bs-target="#addAssetModal"
+                      >
+                        <i class="fa fa-plus"></i>
+                        Thêm Tài sản
+                      </button>
+                    </div>
+                  </div>
+                 <div class="card-body">
+    <!-- Modal -->
+    <div class="modal fade" id="addAssetModal" tabindex="-1" role="dialog" aria-labelledby="addAssetModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="addAssetModalLabel">Thêm tài sản</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action=""enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="name">Tên tài sản</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="img">Ảnh</label>
+                            <input type="file" class="form-control" id="img" name="img" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="type">Loại tài sản</label>
+                            <input type="text" class="form-control" id="type" name="type" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Tình trạng</label>
+                            <input type="text" class="form-control" id="status" name="status" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Vị trí</label>
+                            <input type="text" class="form-control" id="location" name="location" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="purchaDate">Ngày nhập</label>
+                            <input type="date" class="form-control" id="purchaDate" name="purchaDate" required>
+                        </div>
+                        <div class="modal-footer border-0">
+                            <button type="submit" name="txtsub" class="btn btn-primary" id="btnSub">Thêm</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="closeButton">Đóng</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="modal-body">
-    <form id="addAssetForm" method="POST" enctype="multipart/form-data">
-        <!-- Thêm trường nhập ID Tài Sản -->
-        <div class="mb-3">
-            <label for="assetId" class="form-label">ID Tài Sản</label>
-            <input type="text" class="form-control" id="assetId" name="Id_Assets" placeholder="ID Tài Sản" readonly value="Auto ID">
-        </div>
-        <div class="mb-3">
-            <label for="assetName" class="form-label">Tên tài sản</label>
-            <input type="text" class="form-control" id="assetName" name="Name" placeholder="Tên tài sản" required>
-        </div>
-        <div class="mb-3">
-            <label for="assetImage" class="form-label">Hình ảnh</label>
-            <input type="file" class="form-control" id="assetImage" name="Image" required>
-        </div>
-        <div class="mb-3">
-            <label for="assetType" class="form-label">Loại tài sản</label>
-            <input type="text" class="form-control" id="assetType" name="Type" placeholder="Loại tài sản" required>
-        </div>
-        <div class="mb-3">
-            <label for="assetStatus" class="form-label">Tình trạng</label>
-            <input type="text" class="form-control" id="assetStatus" name="Status" placeholder="Tình trạng" required>
-        </div>
-        <div class="mb-3">
-            <label for="assetLocation" class="form-label">Vị trí</label>
-            <input type="text" class="form-control" id="assetLocation" name="Location" placeholder="Vị trí" required>
-        </div>
-        <div class="mb-3">
-            <label for="purchaseDate" class="form-label">Ngày mua</label>
-            <input type="date" class="form-control" id="purchaseDate" name="PurchaDate" required>
-        </div>
-        <button type="submit" class="btn btn-primary" name="action" value="insert">Thêm Tài Sản</button>
-    </form>
-</div>
         </div>
     </div>
 </div>
 
-<table border="1">
-    <thead>
-        <tr>
-            <th>ID Tài Sản</th> <!-- Thêm cột ID -->
-            <th>Tên Tài Sản</th>
-            <th>Hình ảnh</th>
-            <th>Loại tài sản</th>
-            <th>Tình trạng</th>
-            <th>Vị trí</th>
-            <th>Ngày nhập</th>
-            <th>Thao tác</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php
-        include("connect.php");
-        include("control.php");
-
-        $user = new data_user();
-        // Xử lý thêm tài sản
-        if (isset($_POST['action']) && $_POST['action'] == 'insert') {
-            $name = $_POST['Name'];
-            $img = $_FILES['Image'];
-            $type = $_POST['Type'];
-            $status = $_POST['Status'];
-            $location = $_POST['Location'];
-            $purchadate = isset($_POST['PurchaDate']) ? $_POST['PurchaDate'] : ''; // Kiểm tra sự tồn tại của trường
-
-            if (isset($img['name']) && $img['error'] === 0) {
-                $uploadDir = 'uploads/';
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0777, true);
-                }
-                $fileName = iconv('UTF-8', 'ASCII//TRANSLIT', $img['name']);
-                $fileName = preg_replace('/[^A-Za-z0-9.\-]/', '_', $fileName);
-                $fileTmpPath = $img['tmp_name'];
-                $fileDest = $uploadDir . $fileName;
-
-                if (move_uploaded_file($fileTmpPath, $fileDest)) {
-                    $user->insert_assets($name, $fileName, $type, $status, $location, $purchadate);
-                    echo "<script>alert('File uploaded successfully: $fileDest')</script>";
-                } else {
-                    echo "<script>alert('Failed to upload file')</script>";
-                }
-            } else {
-                echo "<script>alert('No file uploaded or upload error')</script>";
-            }
-        }
-
-        // Xóa tài sản
-        if (isset($_POST['delete']) && $_POST['delete'] == 'delete') {
-          $id = $_POST['Id_Assets'];
-          $result = $user->delete_assets($id);
-          if ($result) {
-              echo "<script>alert('Xóa tài sản thành công!');</script>";
-              // Chuyển hướng về trang quản lý tài sản
-              echo "<script>window.location.href = 'Quản lý tài sản.php';</script>";
-          } else {
-              echo "<script>alert('Xóa tài sản thất bại!');</script>";
-          }
-      }
-      if (isset($_POST['update']) && $_POST['update'] == 'update') {
-        if (isset($_POST['Id_Assets']) && !empty($_POST['Id_Assets'])) {
-            // Lấy ID và các dữ liệu khác từ form
-            $id = $_POST['Id_Assets'];
-            $name = $_POST['Name'];
-            $img = $_FILES['Image'];
-            $type = $_POST['Type'];
-            $status = $_POST['Status'];
-            $location = $_POST['Location'];
-            $purchadate = $_POST['PurchaDate'];
-            if (isset($img['name']) && $img['error'] === 0) {
-              $uploadDir = 'uploads/';
-              if (!is_dir($uploadDir)) {
-                  mkdir($uploadDir, 0777, true);
-              }
-              $fileName = iconv('UTF-8', 'ASCII//TRANSLIT', $img['name']);
-              $fileName = preg_replace('/[^A-Za-z0-9.\-]/', '_', $fileName);
-              $fileTmpPath = $img['tmp_name'];
-              $fileDest = $uploadDir . $fileName;
-  
-              if (move_uploaded_file($fileTmpPath, $fileDest)) {
-                  $img = $fileName; // Lấy tên file ảnh mới
-              } else {
-                  echo "<script>alert('Failed to upload image!');</script>";
-              }
-          }
-        }
-      }
-          // Kiểm tra từ khóa tìm kiếm
-          if (isset($_GET['search']) && !empty($_GET['search'])) {
-            $keyword = $_GET['search'];
-            $assets = $user->search_Assets($keyword); // Gọi hàm tìm kiếm
-        } else {
-            $assets = $user->select_Assets(); // Gọi hàm lấy danh sách tài sản
-        }
-
-      // Hiển thị danh sách tài sản
-if ($assets) {
-    while ($row = mysqli_fetch_assoc($assets)) {
-        echo "<tr>";
-        echo "<td>" . htmlspecialchars($row['Id_Assets']) . "</td>"; // Hiển thị ID
-        echo "<td>" . htmlspecialchars($row['Name']) . "</td>";
-        echo "<td><img src='uploads/" . htmlspecialchars($row['Img']) . "' width='100'></td>";
-        echo "<td>" . htmlspecialchars($row['Type']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['Status']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['Location']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['PurchaDate']) . "</td>";
-        echo "<td>
-                <!-- Nút cập nhật -->
-                <form method='GET' action='UpdateQLTS.php' style='display:inline;'>
-                    <input type='hidden' name='Id_Assets' value='" . htmlspecialchars($row['Id_Assets']) . "'>
-                    <button type='submit'>Cập nhật</button>
-                </form>
-                <!-- Nút xóa -->
-                <form method='POST' style='display:inline;'>
-                    <input type='hidden' name='Id_Assets' value='" . htmlspecialchars($row['Id_Assets']) . "'>
-                    <button type='submit' name='delete' value='delete'>Xóa</button>
-                </form>
-              </td>";
-        echo "</tr>";
-    }
-} else {
-    echo "<tr><td colspan='8'>Không có tài sản nào!</td></tr>"; // Thay đổi colspan thành 8
-}
-?>
-    </tbody>
-</table>
-
-    </section>
-    </main>
-    <section class="footer">
-        <div class="visit-us">
-            <p>&copy; 2024 - Đại Học Phương Đông  - Hệ Thống Quản Lý Cơ Sở Vật Chất</p>
-            <p><i class="fas fa-phone"></i>  0243 623 0234</p>
-            <p><i class="fas fa-envelope"></i>  contact@phuongdong.edu.vn</p>
-            <p><i class="fas fa-map-marker-alt"></i>  Cơ sở 1: 171 Trung Kính, Yên Hòa, Cầu Giấy, Hà Nội</p>
-            <p><i class="fas fa-map-marker-alt"></i>  Cơ sở 2: Số 4, ngõ chùa Hưng, phố Minh Khai, Hai Bà Trưng, Hà Nội</p>
+                    <div class="table-responsive">
+                      <table
+                        id="add-row"
+                        class="display table table-striped table-hover"
+                      >
+                        <thead>
+                          <tr>
+                            <th>Tên sản phẩm</th>
+                            <th>Ảnh</th>
+                            <th>Loại</th>
+                            <th>Tình trạng</th>
+                            <th>Vị trí</th>
+                            <th>Ngày nhập</th>
+                            <th style="width: 10%">Hành động</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <?php 
+                          $assets = $get_user->select_Assets();
+                          foreach ($assets as $ass) {
+                            ?>
+                            <tr>
+                              <td><?php echo $ass['Name'] ?></td>
+                              
+                              <td><img width="70px" height="70px" src="uploads/<?php echo $ass['Img'] ?>" alt="<?php echo $ass['Name'] ?>"></td>
+                              <td><?php echo $ass['Type'] ?></td>
+                              <td><?php echo $ass['Status'] ?></td>
+                              <td><?php echo $ass['Location'] ?></td>
+                              <td><?php echo $ass['PurchaDate']?></td>
+                              <td>
+                              <div class="form-button-action">
+                                  <button
+                                    type="button"
+                                      data-bs-toggle="modal"
+                                      data-bs-target="#updateRowModal"
+                                      class="btn btn-link btn-primary btn-lg"
+                                  >
+                                    <a href="UpdateQLTS.php?Id_Assets=<?php echo $ass['Id_Assets'] ?>" class="fa fa-edit"></a>
+                                  </button>
+                                <button
+                                  type="button"
+                                  data-bs-toggle="tooltip"
+                                  title=""
+                                  class="btn btn-link btn-danger"
+                                  data-original-title="Remove"
+                                >
+                                  <a href="deleteAss.php?del=<?php echo $ass['Id_Assets'] ?>" onClick="if(confirm('Bạn có chắc chắn muốn xoá')) return true; else return false;" class="fa fa-times"></a>
+                                </button>
+                              </div>
+                            </td>
+                         <?php }
+                          ?>
+                          
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="socials">
-            <h3>FOLLOW OUR SOCIALS</h3>
-            <p>
-                <a href="https://www.instagram.com/" target="_blank"> 
-                    <i class="fa-brands fa-instagram"></i> 
-                </a>
-                <a href="https://www.facebook.com/" target="_blank"> 
-                    <i class="fa-brands fa-facebook-f"></i> 
-                </a>
-                <a href="https://discord.com/" target="_blank"> 
-                    <i class="fa-brands fa-discord"></i> 
-                </a>
-                
-            </p>
-        </div>
-    </section>
+
+      </div>
+
       <!-- Custom template | don't include it in your project! -->
       <div class="custom-template">
         <div class="title">Settings</div>

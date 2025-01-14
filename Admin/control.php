@@ -19,7 +19,13 @@ class data_user
         return $run;
     }
    
-
+    public function select_admin($user)
+    {
+        global $conn;
+        $sql = "SELECT * FROM `user` WHERE username='$user'";
+        $run = mysqli_query($conn, $sql);
+        return $run;
+    }
     
     public function login($user, $pass)
     {
@@ -48,6 +54,13 @@ class data_user
             }
         }
         return false; // Đăng nhập thất bại
+    }
+    public function select_user_top()
+    {
+        global $conn;
+        $sql = "SELECT * FROM `user` ORDER BY `user`.`Id_User` DESC";
+        $run = mysqli_query($conn, $sql);
+        return $run;
     }
     // Hàm lấy danh sách tài sản
     public function select_Assets()
@@ -163,6 +176,25 @@ class data_user
         $run = mysqli_query($conn, $sql);
         return $run;
     }
+    
+    public function countProcessedMaintenance()
+    {
+        global $conn;
+        $sql = "SELECT COUNT(*) as count FROM maintenance WHERE MaintenanceStatus = 'Hoàn thành'";
+        $result = mysqli_query($conn, $sql);
+        $row = mysqli_fetch_assoc($result);
+        return $row['count'];
+    }
+
+    public function countUnprocessedMaintenance()
+    {
+        global $conn;
+        $sql = "SELECT COUNT(*) as count FROM maintenance WHERE MaintenanceStatus = 'Đang xử lý'";
+        $result = mysqli_query($conn, $sql);
+        $row = mysqli_fetch_assoc($result);
+        return $row['count'];
+    }
+    
     // nguoi dung 
    // Phương thức lấy tất cả người dùng
 public function select_all_users()
@@ -184,6 +216,7 @@ public function delete_user($id) {
     $stmt->close();
     return $result;
 }
+
 function updateUser($user_id, $username, $password, $role, $mysqli) {
     // Nếu mật khẩu có thay đổi, mã hóa mật khẩu trước khi lưu
     if (!empty($password)) {
