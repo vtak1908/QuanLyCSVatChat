@@ -176,6 +176,13 @@ class data_user
         $run = mysqli_query($conn, $sql);
         return $run;
     }
+    public function Maintenance_status($Id, $MaintenanceStatus)
+    {
+        global $conn;
+        $sql = "UPDATE maintenance SET MaintenanceStatus = '$MaintenanceStatus' WHERE Id = '$Id'";
+        $run = mysqli_query($conn, $sql);
+        return $run;
+    }
     
     public function countProcessedMaintenance()
     {

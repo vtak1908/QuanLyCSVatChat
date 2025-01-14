@@ -1,15 +1,15 @@
 <?php
 session_start();
-include ("control.php");
-
-
+include("control.php");
+$get_user = new data_user();
 // Kiểm tra nếu người dùng đã đăng nhập và có vai trò là admin
 if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
   echo "<script>alert('Bạn cần đăng nhập để thực hiện thao tác này');
   window.location = 'login.php';</script>";
   exit();
 }
- ?>
+
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -280,138 +280,116 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
             </div>
           </nav>
           <!-- End Navbar -->
-          <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-  <div class="container-fluid">
-    <!-- Search Form for Desktop -->
-    <div class="navbar-form navbar-search d-none d-lg-flex ms-auto">
-      <div class="input-group">
-        <button type="submit" class="btn btn-search pe-1">
-          <i class="fa fa-search"></i>
-        </button>
-        <input type="text" class="form-control" placeholder="Search...">
-      </div>
-    </div>
+          <!-- End Navbar -->
+        </div>
+        <script>
+            function setUpdateModal(Id, MaintenanceStatus) {
+                document.getElementById('Id').value = Id;
+                document.getElementById('MaintenanceStatus').value = MaintenanceStatus;
+            }
+        </script>
 
-    <!-- Mobile Search Dropdown -->
-    <ul class="navbar-nav ms-auto d-lg-none">
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-          <i class="fa fa-search"></i>
-        </a>
-        <ul class="dropdown-menu dropdown-search">
-          <form class="navbar-form nav-search">
-            <div class="input-group">
-              <input type="text" class="form-control" placeholder="Search...">
-            </div>
-          </form>
-        </ul>
-      </li>
-    </ul>
+        <!-- Modal -->
+            <div class="modal fade" id="updateRowModal" tabindex="-1" aria-labelledby="updateRowModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateRowModalLabel">Cập nhật trạng thái bảo trì</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="updateStatusForm" method="post">
+                    <input type="hidden" name="id_order" id="id_order">
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Trạng thái</label>
+                        <select class="form-control" id="status" name="status" required>
+                        <option value="Chờ">Chờ</option>
+                        <option value="Đang xử lý">Đang xử lý</option>
+                        <option value="Đang vận chuyển">Loại bỏ</option>
+                        <option value="Hoàn thành">Hoàn thành</option>
+                      
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                    </form>
+                </div>
+                </div>
+                <?php 
+                if(isset($_POST['Id']) && isset($_POST['MaintenanceStatus'])){
+                    $Id = $_POST['Id'];
+                    $status = $_POST['MaintenanceStatus'];
 
-    <!-- Notifications Dropdown -->
-    <li class="nav-item">
-      <a class="nav-link" href="#" data-bs-toggle="dropdown">
-        <i class="fa fa-bell"></i>
-        <span class="notification-badge"></span>
-      </a>
-    </li>
-  </div>
-</nav><?php
-include_once("connect.php");
-include_once("control.php");
-
-$user = new data_user();
-$maintenance = null;
-
-// Kiểm tra nếu có bộ lọc theo ngày
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['startDate']) && isset($_POST['endDate'])) {
-    $startDate = $_POST['startDate'];  // Ngày bắt đầu
-    $endDate = $_POST['endDate'];   // Ngày kết thúc
-
-    // Thực hiện truy vấn bảo trì theo ngày
-    $maintenance = $user->select_Maintenance_By_Date($startDate, $endDate);
-} else {
-    // Nếu không có bộ lọc, lấy tất cả dữ liệu bảo trì
-    $maintenance = $user->select_Maintenance();
-}
-
-// Xử lý xóa tài sản
-if (isset($_POST['delete']) && $_POST['delete'] == 'delete') {
-    $id = $_POST['Id_Assets'];
-    $result = $user->delete_assets($id);
-    if ($result) {
-        echo "<script>alert('Xóa tài sản thành công!');</script>";
-        echo "<script>window.location.href = 'Quản lý bảo trì.php';</script>";
-    } else {
-        echo "<script>alert('Xóa tài sản thất bại!');</script>";
-    }
-}
-
-// Kiểm tra nếu không có kết quả trả về
-if ($maintenance && mysqli_num_rows($maintenance) == 0) {
-    echo "Không có kết quả bảo trì nào.";
-}
+                    $update_status = $get_data->Maintenance_status($Id, $MaintenanceStatus);
+                    if($update_status){
+                        echo "<script>alert('Cập nhật trạng thái thành công');
+                        </script>";
+                    } else {
+                        echo "<script>alert('Cập nhật thất bại')</script>";
+                    }
+                }
 ?>
 
-<section id="maintenance-list">
-    <h2>Danh Sách Bảo Trì</h2>
-    <!-- Form lọc dữ liệu theo ngày -->
-    <form method="POST" action="" class="filter-form">
-        <div class="form-group">
-            <label for="startDate">Ngày Bắt Đầu:</label>
-            <input type="date" name="startDate" id="startDate" class="form-control">
-        </div>
-        <div class="form-group">
-            <label for="endDate">Ngày Kết Thúc:</label>
-            <input type="date" name="endDate" id="endDate" class="form-control">
-        </div>
-        <button type="submit" class="btn-submit">Lọc</button>
-    </form>
+            </div>
+            </div>
 
-    <!-- Danh sách bảo trì -->
-    <table>
-        <thead>
-            <tr>
-                <th>Tài Sản</th>
-                <th>Mô Tả</th>
-                <th>Ngày Bảo Trì</th>
-                <th>Trạng Thái</th>
-                <th>Thao tác</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php 
-            if ($maintenance && mysqli_num_rows($maintenance) > 0) {
-                while ($row = mysqli_fetch_assoc($maintenance)) {
-            ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($row['AssetName']); ?></td>
-                        <td><?php echo htmlspecialchars($row['Description']); ?></td>
-                        <td><?php echo htmlspecialchars($row['MaintenanceDate']); ?></td>
-                        <td><?php echo htmlspecialchars($row['MaintenanceStatus']); ?></td>
-                        <td>
-                            <!-- Nút cập nhật -->
-                            <form method='GET' action='update_baotri.php' style='display:inline;'>
-                                <input type='hidden' name='Id_Assets' value='<?php echo htmlspecialchars($row['Id_Assets']); ?>'>
-                                <button type='submit'>Cập nhật</button>
-                            </form>
-                            <!-- Nút xóa -->
-                            <form method='POST' style='display:inline;'>
-                                <input type='hidden' name='Id_Assets' value='<?php echo htmlspecialchars($row['Id_Assets']); ?>'>
-                                <button type='submit' name='delete' value='delete' onclick="return confirm('Bạn chắc chắn muốn xóa không?');">Xóa</button>
-                            </form>
-                        </td>
-                    </tr>
-            <?php 
-                }
-            } else {
-                echo "<tr><td colspan='5'>Không có kết quả nào.</td></tr>";
-            }
-            ?>
-        </tbody>
-    </table>
-</section>
+        <div class="container">
+          <div class="page-inner">
+                    <div class="table-responsive">
+                      <table
+                        id="add-row"
+                        class="display table table-striped table-hover"
+                      >
+                        <thead>
+                          <tr>
+                            <th>Tên tài sản</th>
+                            <th>Ngày bảo trì</th>
+                            <th>Mô tả</th>
+                            <th>Trạng thái bảo trì</th>
+                            <th style="width: 10%">Hành động</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <?php 
+                          $select = $get_user->select_Maintenance();
+                          foreach ($select as $se) {
+                          ?>
+                          <tr>
+                            <td><?php echo $se['AssetName'] ?></td>
+                            <td><?php echo $se['MaintenanceDate'] ?></td>
+                            <td><?php echo $se['Description'] ?></td>
+                            <td><?php echo $se['MaintenanceStatus'] ?></td>
+                            <td>
+                              <div class="form-button-action">
+                                <button
+                                  type="button"
+                                    class="btn btn-link btn-primary btn-lg"
+                                >
+                                  <a href="maintenanceDetail.php?id=<?php echo $se['Id'] ?>" class="fas fa-align-justify"></a>
+                                </button>
+                                <button
+                                  type="button"
+                                    class="btn btn-link btn-danger"
+                                    data-original-title="Remove"
+                                >
+                                  <a href="deleteMaintenance.php?id=<?php echo $se['Id'] ?>" onClick="if(confirm('Bạn có chắc chắn muốn xoá?')) return true; else return false;" class="fa fa-times"></a>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                          <?php
+                          }
+                          ?>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
+      </div>
 
       <!-- Custom template | don't include it in your project! -->
       <div class="custom-template">
