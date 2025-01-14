@@ -18,6 +18,7 @@ session_start();
             color: #f8f9fa; /* Màu trắng nhạt */
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.81); /* Đổ bóng để làm nổi bật văn bản */
         }
+        
     </style>
 </head>
 <body>
@@ -71,7 +72,11 @@ session_start();
     <main>
     <section id="assetList">
         <h2>Danh Sách Tài Sản</h2>
-        <table border="1">
+        <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Tìm kiếm tài sản...">
+        <button type="button" onclick="searchTable()"><i class="fas fa-search"></i></button>
+    </div>
+        <table border="1" id="assetTable">
             <thead>
                 <tr>
                     <th>Tên Tài Sản</th>
@@ -105,6 +110,29 @@ session_start();
             </tbody>
         </table>
     </section>
+    <script>
+function searchTable() {
+    var input, filter, table, tr, td, i, j, txtValue;
+    input = document.getElementById("searchInput");
+    filter = input.value.toLowerCase();
+    table = document.getElementById("assetTable");
+    tr = table.getElementsByTagName("tr");
+
+    for (i = 1; i < tr.length; i++) {
+        tr[i].style.display = "none";
+        td = tr[i].getElementsByTagName("td");
+        for (j = 0; j < td.length; j++) {
+            if (td[j]) {
+                txtValue = td[j].textContent || td[j].innerText;
+                if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                    break;
+                }
+            }
+        }
+    }
+}
+</script>
     </main>
     <section class="footer">
         <div class="visit-us">
