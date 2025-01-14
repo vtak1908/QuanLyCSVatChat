@@ -58,7 +58,7 @@ session_start(); ?>
                     </form>
                     <?php
                         include("control.php");
-                        session_start();
+                       
                         $get_Data = new data_user();
 
                         if (isset($_POST['submit'])) {
