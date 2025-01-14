@@ -91,7 +91,7 @@ $maintenance = $user->select_Maintenance();
                             <th>Chọn</th>
                             <th>Tên Tài Sản</th>
                             <th>Hình Ảnh</th>
-                            <th>Loại</th>
+                            <th>Loại Tài Sản</th>
                             <th>Tình Trạng</th>
                             <th>Vị Trí</th>
                             <th>Ngày Mua</th>
@@ -109,7 +109,7 @@ $maintenance = $user->select_Maintenance();
                                     </label>
                                 </td>
                                 <td>
-                                    <img src="../Admin/uploads/<?php echo $row['Img']; ?>" alt="<?php echo $row['Name']; ?>" style="width: 100px; height: auto;">
+                                    <img src="Admin/uploads/<?php echo $row['Img']; ?>" alt="<?php echo $row['Name']; ?>" style="width: 100px; height: auto;">
                                 </td>
                                 <td><?php echo $row['Type']; ?></td>
                                 <td><?php echo $row['Status']; ?></td>

@@ -14,7 +14,7 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
 <html lang="en">
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Category</title>
+    <title>Tài sản</title>
     <meta
       content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
       name="viewport"
@@ -24,212 +24,6 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
       href="assets/img/kaiadmin/favicon.ico"
       type="image/x-icon"
     />
-    <style>/* General Styles */
-body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f8f9fa;
-  margin: 0;
-  padding: 0;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-/* Đặt lại một số thuộc tính cơ bản để tránh các kiểu mặc định của trình duyệt */
-
-.filter-form {
-    max-width: 600px;
-    margin: 20px auto;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Các nhóm form (div) */
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: #333;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-}
-
-.form-group input:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-/* Nút Lọc */
-.btn-submit {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.btn-submit:hover {
-    background-color: #0056b3;
-}
-
-/* Responsive: Giảm kích thước form trên các màn hình nhỏ */
-@media (max-width: 768px) {
-    .filter-form {
-        padding: 15px;
-        width: 90%;
-    }
-
-    .form-group label {
-        font-size: 14px;
-    }
-
-    .form-group input {
-        font-size: 14px;
-    }
-
-    .btn-submit {
-        width: 100%;
-    }
-}
-
-/* Navbar */
-.navbar {
-  background-color: #007bff;
-}
-
-.navbar .navbar-nav .nav-link {
-  color: #fff;
-}
-
-.navbar .navbar-nav .nav-link:hover {
-  color: #f1f1f1;
-}
-
-/* Search Form */
-.navbar-form {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.input-group .form-control {
-  width: 200px;
-  border-radius: 5px;
-}
-
-.navbar-form .btn-search {
-  background-color: #f8f9fa;
-  border: none;
-}
-
-.navbar-form .btn-search i {
-  color: #007bff;
-}
-
-/* Maintenance List Section */
-#maintenance-list {
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Filter Form */
-form .form-label {
-  font-weight: bold;
-}
-
-form button[type="submit"] {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-}
-
-form button[type="submit"]:hover {
-  background-color: #0056b3;
-}
-
-/* Table Styles */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-table th, table td {
-  padding: 12px;
-  text-align: left;
-  border: 1px solid #ddd;
-}
-
-table th {
-  background-color: #f1f1f1;
-}
-
-table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-table tr:hover {
-  background-color: #e9ecef;
-}
-
-/* Notification Badge */
-.notification-badge {
-  position: absolute;
-  top: 0;
-  right: 0;
-  background-color: red;
-  color: white;
-  font-size: 10px;
-  border-radius: 50%;
-  padding: 2px 5px;
-}
-/* Nút thao tác: Cập nhật và Xóa */
-.btn-update, .btn-delete {
-    padding: 5px 15px;
-    text-decoration: none;
-    border-radius: 4px;
-    color: white;
-    font-weight: bold;
-    text-align: center;
-    display: inline-block;
-}
-
-.btn-update {
-    background-color: #4CAF50; /* Màu xanh cho nút Cập nhật */
-}
-
-.btn-update:hover {
-    background-color: #45a049;
-}
-
-.btn-delete {
-    background-color: #f44336; /* Màu đỏ cho nút Xóa */
-}
-
-.btn-delete:hover {
-    background-color: #e53935;
-}
-
-</style>
 
     <!-- Fonts and icons -->
     <script src="assets/js/plugin/webfont/webfont.min.js"></script>
@@ -309,36 +103,31 @@ table tr:hover {
                 <h4 class="text-section">Quản lý</h4>
               </li>
                     <li class="nav-item">
-                      <a href="Quản lý tài sản.php">
+                      <a href="QLTS.php">
                         <i class="icon-book-open"></i>
-                        <span class="sub-item">Quán lý tài sản</span>
+                        <span class="sub-item">Quản lý tài sản</span>
                         
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a href="Quản lý bảo trì.php">
+                      <a href="QLBT.php">
                         <i class="icon-menu"></i>
                         <span class="sub-item">Quản lý bảo trì</span>
                         
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a href="QUản lý người dùng.php">
+                      <a href="QLND.php">
                         <i class="icon-envelope"></i>
                         <span class="sub-item">Quản lý người dùng</span>
                       </a>
                     </li>
-                    <li class="nav-item">
-                      <a href="Order.php">
-                        <i class="icon-calendar"></i>
-                        <span class="sub-item">Đơn đặt hàng</span>
-                        
-                      </a>
-                    </li>
+                    
                     <li class="nav-item">
                       <a href="baocao.php">
                         <i class="icon-chart"></i>
-                        <span class="sub-item">Báo cáo</span>                      
+                        <span class="sub-item">Báo cáo</span>
+                        
                       </a>
                     </li>
                   
@@ -376,6 +165,121 @@ table tr:hover {
             <!-- End Logo Header -->
           </div>
           <!-- Navbar Header -->
+          <nav
+            class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom"
+          >
+            <div class="container-fluid">
+              <nav
+                class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <button type="submit" class="btn btn-search pe-1">
+                      <i class="fa fa-search search-icon"></i>
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search ..."
+                    class="form-control"
+                  />
+                </div>
+              </nav>
+
+              <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
+                <li
+                  class="nav-item topbar-icon dropdown hidden-caret d-flex d-lg-none"
+                >
+                  <a
+                    class="nav-link dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                    href="#"
+                    role="button"
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                  >
+                    <i class="fa fa-search"></i>
+                  </a>
+                  <ul class="dropdown-menu dropdown-search animated fadeIn">
+                    <form class="navbar-left navbar-form nav-search">
+                      <div class="input-group">
+                        <input
+                          type="text"
+                          placeholder="Search ..."
+                          class="form-control"
+                        />
+                      </div>
+                    </form>
+                  </ul>
+                </li>
+                <li class="nav-item topbar-icon dropdown hidden-caret">
+                  <a
+                    class="nav-link dropdown-toggle"
+                    href="#"
+                    id="notifDropdown"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  >
+                    <i class="fa fa-bell"></i>
+                    <span class="notification"></span>
+                  </a>
+                </li>
+                
+                <li class="nav-item topbar-user dropdown hidden-caret">
+                  <?php if (isset($_SESSION['user'])) {
+                    
+                    { ?>
+                  <a
+                    class="dropdown-toggle profile-pic"
+                    data-bs-toggle="dropdown"
+                    href="#"
+                    aria-expanded="false"
+                  >
+                    <div class="avatar-sm">
+                      <img
+                        src="assets/img/profile.jpg"
+                        alt="..."
+                        class="avatar-img rounded-circle"
+                      />
+                    </div>
+                    <span class="profile-username">
+                      <span class="op-7">Hi,</span>
+                      <span class="fw-bold"><?php echo ($_SESSION['user']); ?></span>
+                    </span>
+                  </a>
+                  <ul class="dropdown-menu dropdown-user animated fadeIn">
+                    <div class="dropdown-user-scroll scrollbar-outer">
+                      <li>
+                        <div class="user-box">
+                          <div class="avatar-lg">
+                            <img
+                              src="assets/img/profile.jpg"
+                              alt="image profile"
+                              class="avatar-img rounded"
+                            />
+                          </div>
+                          <div class="u-text">
+                            <h4><?php echo ($_SESSION['user']) ?></h4>
+                           
+                          </div>
+                        </div>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="logout.php">Đăng xuất</a>
+                      </li>
+                    </div>
+                  </ul>
+                  <?php }
+                  }else{
+                    ?><a href="login.php">Đăng nhập</a>
+                  <?php } ?>
+                </li>
+              </ul>
+            </div>
+          </nav>
+          <!-- End Navbar -->
           <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
   <div class="container-fluid">
     <!-- Search Form for Desktop -->

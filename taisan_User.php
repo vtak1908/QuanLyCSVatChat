@@ -76,7 +76,7 @@ session_start();
                 <tr>
                     <th>Tên Tài Sản</th>
                     <th>Hình ảnh</th>
-                    <th>Loại tài sản</th>
+                    <th>Loại Tài Sản</th>
                     <th>Tình trạng</th>
                     <th>Vị trí</th>
                     <th>Ngày nhập</th>
@@ -92,7 +92,7 @@ session_start();
                     while ($row = mysqli_fetch_assoc($assets)) {
                         echo "<tr>";
                         echo "<td>" . $row['Name'] . "</td>";
-                        echo "<td><img src='../Admin/uploads/" . $row['Img'] . "' width='100'></td>";
+                        echo "<td><img src='Admin/uploads/" . $row['Img'] . "' width='100'></td>";
                         echo "<td>" . $row['Type'] . "</td>";
                         echo "<td>" . $row['Status'] . "</td>";
                         echo "<td>" . $row['Location'] . "</td>";
