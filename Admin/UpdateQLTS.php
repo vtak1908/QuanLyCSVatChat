@@ -367,10 +367,18 @@ if (isset($_GET['Id_Assets'])) {
                                             </div>
                                         </div>
                                         <div class="col-sm-12">
-                                            <div class="form-group">
-                                                <label>Tình Trạng</label>
-                                                <input type="text" value="<?php echo $se_ass['Status']; ?>" class="form-control" name="Status" placeholder="Tình trạng" />
-                                            </div>
+                                        <?php
+                                        
+                                        $currentStatus = $se_ass['Status']; 
+                                        ?>
+                                        <div class="form-group">
+                                            <label>Tình Trạng</label>
+                                            <select class="form-control" id="Status" name="Status" required>
+                                                <option value="Tốt" <?php if ($currentStatus == "Tốt") echo "selected"; ?>>Tốt</option>
+                                                <option value="Hỏng" <?php if ($currentStatus == "Hỏng") echo "selected"; ?>>Hỏng</option>
+                                                <option value="Đang sửa chữa" <?php if ($currentStatus == "Đang sửa chữa") echo "selected"; ?>>Đang sửa chữa</option>
+                                            </select>
+                                        </div>
                                         </div>
                                         <div class="col-sm-12">
                                             <div class="form-group">

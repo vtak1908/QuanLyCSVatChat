@@ -366,8 +366,13 @@ if (isset($_POST['txtsub'])) {
                             <input type="text" class="form-control" id="type" name="type" required>
                         </div>
                         <div class="form-group">
-                            <label for="status">Tình trạng</label>
-                            <input type="text" class="form-control" id="status" name="status" required>
+                            <label class="form-label" for="status">Tình trạng</label>
+                           
+                            <select class="form-control" id="status" name="status" required>
+                            <option value="Tốt">Tốt</option>
+                            <option value="Hỏng">Hỏng</option>
+                            <option value="Đang sửa chữa">Đang sửa chữa</option>
+                          </select>
                         </div>
                         <div class="form-group">
                             <label for="location">Vị trí</label>

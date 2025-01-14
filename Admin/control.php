@@ -239,7 +239,7 @@ public function delete_User($id)
 public function update_User($id, $username, $password, $role)
 {
     global $conn;
-    $sql = "UPDATE users SET username = ?, password = ?, role = ? WHERE id = ?";
+    $sql = "UPDATE user SET username = ?, password = ?, role = ? WHERE Id_User = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("sssi", $username, $password, $role, $id);
     $result = $stmt->execute();

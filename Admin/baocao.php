@@ -277,87 +277,103 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
           </nav>
         </div><br><br><br>
         <?php
-include("connect.php");
-include("control.php");
+        include("connect.php");
+        include("control.php");
 
-$user = new data_user();
-$assets = $user->select_Assets();
-$maintenance = $user->select_Maintenance();
+        $user = new data_user();
+        $assets = $user->select_Assets();
+        $maintenance = $user->select_Maintenance();
 
-// Chuẩn bị dữ liệu cho báo cáo tình trạng tài sản
-$status_counts = [
-    'Tốt' => 0,
-    'Hỏng' => 0,
-    'Đang sửa chữa' => 0,
-];
+        // Chuẩn bị dữ liệu cho báo cáo tình trạng tài sản
+        $status_counts = [
+          'Tốt' => 0,
+          'Hỏng' => 0,
+          'Đang sửa chữa' => 0,
+        ];
 
-while ($row = mysqli_fetch_assoc($assets)) {
-    $status_counts[$row['Status']]++;
-}
+        while ($row = mysqli_fetch_assoc($assets)) {
+          $status_counts[$row['Status']]++;
+        }
 
-// Chuẩn bị dữ liệu cho báo cáo hoạt động bảo trì
-$maintenance_counts = [
-    'Hoàn thành' => 0,
-    'Đang xử lý' => 0,
-    'Loại bỏ' => 0,
-];
+        // Chuẩn bị dữ liệu cho báo cáo hoạt động bảo trì
+        $maintenance_counts = [
+          'Hoàn thành' => 0,
+          'Đang xử lý' => 0,
+          'Loại bỏ' => 0,
+        ];
 
-while ($row = mysqli_fetch_assoc($maintenance)) {
-    $maintenance_counts[$row['MaintenanceStatus']]++;
-}
-?>
-<main>
-    <section id="asset-report">
-        <h2>Báo Cáo Tình Trạng Tài Sản</h2>
-        <canvas id="assetStatusChart" width="50" height="50"></canvas> <!-- Kích thước nhỏ -->
-    </section>
+        while ($row = mysqli_fetch_assoc($maintenance)) {
+          $maintenance_counts[$row['MaintenanceStatus']]++;
+        }
+        ?>
+        <main>
+          <section id="asset-report">
+            <h2>Báo Cáo Tình Trạng Tài Sản</h2>
+            <canvas id="assetStatusChart" width="300" height="150"></canvas> <!-- Kích thước nhỏ hơn -->
+          </section>
 
-    <section id="maintenance-report">
-        <h2>Báo Cáo Hoạt Động Bảo Trì</h2>
-        <canvas id="maintenanceReportChart" width="50" height="50"></canvas> <!-- Kích thước nhỏ -->
-    </section>
-</main>
+          <section id="maintenance-report">
+            <h2>Báo Cáo Hoạt Động Bảo Trì</h2>
+            <canvas id="maintenanceReportChart" width="300" height="150"></canvas> <!-- Kích thước nhỏ hơn -->
+          </section>
+        </main>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    // Truyền dữ liệu từ PHP vào JavaScript
-    var assetStatusData = <?php echo json_encode($status_counts); ?>;
-    var maintenanceStatusData = <?php echo json_encode($maintenance_counts); ?>;
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+          // Truyền dữ liệu từ PHP vào JavaScript
+          var assetStatusData = <?php echo json_encode($status_counts); ?>;
+          var maintenanceStatusData = <?php echo json_encode($maintenance_counts); ?>;
 
-    // Lấy context của canvas
-    var assetStatusCtx = document.getElementById('assetStatusChart').getContext('2d');
-    var maintenanceStatusCtx = document.getElementById('maintenanceReportChart').getContext('2d');
+          // Lấy context của canvas
+          var assetStatusCtx = document.getElementById('assetStatusChart').getContext('2d');
+          var maintenanceStatusCtx = document.getElementById('maintenanceReportChart').getContext('2d');
 
-    // Tạo biểu đồ tình trạng tài sản
-    var assetStatusChart = new Chart(assetStatusCtx, {
-        type: 'bar',
-        data: {
-            labels: Object.keys(assetStatusData),
-            datasets: [{
-                label: 'Số Lượng Tài Sản',
-                data: Object.values(assetStatusData),
-                backgroundColor: ['#4caf50', '#f44336', '#ff9800'],
-                borderColor: ['#388e3c', '#d32f2f', '#f57c00'],
-                borderWidth: 1
-            }]
-        },
-        
-    });
+          // Tạo biểu đồ tình trạng tài sản
+          var assetStatusChart = new Chart(assetStatusCtx, {
+            type: 'bar',
+            data: {
+              labels: Object.keys(assetStatusData),
+              datasets: [{
+          label: 'Số Lượng Tài Sản',
+          data: Object.values(assetStatusData),
+          backgroundColor: ['#4caf50', '#f44336', '#ff9800'],
+          borderColor: ['#388e3c', '#d32f2f', '#f57c00'],
+          borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              scales: {
+          y: {
+            beginAtZero: true
+          }
+              }
+            }
+          });
 
-    // Tạo biểu đồ hoạt động bảo trì
-    var maintenanceStatusChart = new Chart(maintenanceStatusCtx, {
-        type: 'bar',
-        data: {
-            labels: Object.keys(maintenanceStatusData),
-            datasets: [{
-                label: 'Hoạt Động Bảo Trì',
-                data: Object.values(maintenanceStatusData),
-                backgroundColor: ['#4caf50', '#ff9800', '#f44336']
-            }]
-        },
-      
-    });
-</script>
+          // Tạo biểu đồ hoạt động bảo trì
+          var maintenanceStatusChart = new Chart(maintenanceStatusCtx, {
+            type: 'bar',
+            data: {
+              labels: Object.keys(maintenanceStatusData),
+              datasets: [{
+          label: 'Hoạt Động Bảo Trì',
+          data: Object.values(maintenanceStatusData),
+          backgroundColor: ['#4caf50', '#ff9800', '#f44336'],
+          borderColor: ['#388e3c', '#f57c00', '#d32f2f'],
+          borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              scales: {
+          y: {
+            beginAtZero: true
+          }
+              }
+            }
+          });
+        </script>
 
 
        
