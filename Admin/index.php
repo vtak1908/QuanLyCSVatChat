@@ -85,12 +85,10 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
           <div class="sidebar-content">
             <ul class="nav nav-secondary">
               <li class="nav-item">
-                <a
-                  data-bs-toggle="collapse"
+              <a
                   href="index.php"
                   class="collapsed"
-                  aria-expanded="false"
-                >
+                  aria-expanded="false">
                   <i class="fas fa-home"></i>
                   <p>Trang chủ</p>
                 </a>
